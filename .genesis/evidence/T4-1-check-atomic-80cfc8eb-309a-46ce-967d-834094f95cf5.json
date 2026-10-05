@@ -1,0 +1,30 @@
+{
+  "task": "T4-1",
+  "gate": "check-atomic",
+  "kind": "command",
+  "attempt": "80cfc8eb-309a-46ce-967d-834094f95cf5",
+  "command": "uv run python scripts/check_atomic.py",
+  "started_at": "2026-10-05T18:53:45.165Z",
+  "observed_at": "2026-10-05T18:54:34.210Z",
+  "exit_code": 0,
+  "signal": null,
+  "stdout": "coverage: 9518/9518 conversations fully extracted; 74987/75000 turns represented (100.0%)\r\natomic store OK: 37487 examples, 37487 parent-linked, determinism verified\r\n",
+  "stderr": "",
+  "failure": null,
+  "receipt": null,
+  "revision": {
+    "commit": null,
+    "dirty": null
+  },
+  "source_hash": "a100f2cdd15cc25a7f348661f1f3f177d2fcefe8d85ce2b7af72eca8624aa587",
+  "before_hash": "a100f2cdd15cc25a7f348661f1f3f177d2fcefe8d85ce2b7af72eca8624aa587",
+  "config_hash": "99cbf5ab2b330ea558d306f5cfb952e82e0ff068e9d2736d4d309ffd9c273eab",
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64",
+    "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+    "variables": {}
+  },
+  "hash": "347d361d7adb819e2baeb8efaa722a72afe70f28b3668bad761fa0712257a479"
+}

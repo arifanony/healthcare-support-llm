@@ -1,0 +1,1338 @@
+{
+  "schema_version": 2,
+  "project": {
+    "name": "SLM",
+    "mode": "init",
+    "profile": "prototype",
+    "objective": "Build a personal-use research project for fine-tuning a Small Language Model on curated medical conversation data with a reproducible curation, training, evaluation, and remote GPU execution pipeline.",
+    "constraints": [],
+    "non_goals": [],
+    "trust_boundary": "local repository",
+    "created_at": "2026-09-29T16:48:38.268Z",
+    "updated_at": "2026-10-05T21:26:18.142Z"
+  },
+  "policy": {
+    "ponytail": "full",
+    "autonomy": "human-in-the-loop",
+    "learned_rule_promotion": "human-required",
+    "cleanup": "propose-only",
+    "traces": {
+      "storage": "local",
+      "commit_raw": false,
+      "redact_secrets": true
+    }
+  },
+  "lifecycle": {
+    "phase": "build",
+    "status": "active",
+    "active_task": "T6-1",
+    "blocker": null,
+    "next_action": "Write review queue + log checks, run gate"
+  },
+  "commands": {},
+  "workflow": {
+    "type": "new-product",
+    "started_at": "2026-09-29T16:48:38.282Z",
+    "spec_check": {
+      "at": "2026-09-30T07:35:53.359Z",
+      "source_hash": "b0d0d785fdf6898df6f0118dab222fb4e829017bbdb0da6d7f68c42bcb454dde",
+      "requirements": [
+        "AC-1",
+        "AC-10",
+        "AC-2",
+        "AC-3",
+        "AC-4",
+        "AC-5",
+        "AC-6",
+        "AC-7",
+        "AC-8",
+        "AC-9",
+        "FR-1",
+        "FR-10",
+        "FR-11",
+        "FR-12",
+        "FR-13",
+        "FR-14",
+        "FR-2",
+        "FR-3",
+        "FR-4",
+        "FR-5",
+        "FR-6",
+        "FR-7",
+        "FR-8",
+        "FR-9",
+        "NFR-1",
+        "NFR-2",
+        "NFR-3",
+        "NFR-4",
+        "NFR-5",
+        "NFR-6",
+        "NFR-7"
+      ]
+    },
+    "plan_check": {
+      "at": "2026-09-30T08:09:45.343Z",
+      "source_hash": "64f6cf2726736fc658f8f72e3c2041f560ba8d9270f1f8fa348ee4d1f030055a"
+    },
+    "plan_approval": {
+      "human": "ARIF",
+      "reason": "Re-approved amended plan: task scopes now include data output dirs. No requirement or gate changes.",
+      "at": "2026-09-30T08:13:12.085Z",
+      "source_hash": "64f6cf2726736fc658f8f72e3c2041f560ba8d9270f1f8fa348ee4d1f030055a"
+    }
+  },
+  "artifacts": [
+    {
+      "id": "SPEC-1",
+      "type": "specification",
+      "path": "SPEC.md",
+      "status": "approved",
+      "requirements": [
+        "AC-1",
+        "AC-10",
+        "AC-2",
+        "AC-3",
+        "AC-4",
+        "AC-5",
+        "AC-6",
+        "AC-7",
+        "AC-8",
+        "AC-9",
+        "FR-1",
+        "FR-10",
+        "FR-11",
+        "FR-12",
+        "FR-13",
+        "FR-14",
+        "FR-2",
+        "FR-3",
+        "FR-4",
+        "FR-5",
+        "FR-6",
+        "FR-7",
+        "FR-8",
+        "FR-9",
+        "NFR-1",
+        "NFR-2",
+        "NFR-3",
+        "NFR-4",
+        "NFR-5",
+        "NFR-6",
+        "NFR-7"
+      ],
+      "source_hash": "b0d0d785fdf6898df6f0118dab222fb4e829017bbdb0da6d7f68c42bcb454dde",
+      "approval": {
+        "human": "ARIF",
+        "reason": "Reviewed SPEC.md in full; approved with Unsloth as v1 training framework (ADR-0013). Training on free-tier GPU backend (Colab first).",
+        "at": "2026-09-30T07:36:30.457Z",
+        "source_hash": "b0d0d785fdf6898df6f0118dab222fb4e829017bbdb0da6d7f68c42bcb454dde"
+      }
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "ASSUMPTION-92efbde6",
+      "text": "A ~2K-example source conversation dataset with a usable research license can be obtained (Q1 decides).",
+      "status": "open",
+      "source": "SPEC.md",
+      "recorded_at": "2026-09-29T16:57:42.334Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "ASSUMPTION-a8914cce",
+      "text": "Free-tier Colab GPU suffices for LoRA/QLoRA on a 1-3B model; fallback chain exists if not.",
+      "status": "open",
+      "source": "docs/decisions/ADR-0009-lora-qlora.md",
+      "recorded_at": "2026-09-29T16:57:42.956Z",
+      "paths": [],
+      "tags": []
+    }
+  ],
+  "invariants": [
+    {
+      "id": "INVARIANT-d6b06f5f",
+      "text": "Source data in data/raw/ is write-once and never modified; a gate script re-hashes it.",
+      "source": "docs/decisions/ADR-0004-source-immutability.md",
+      "recorded_at": "2026-09-29T16:57:38.147Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "INVARIANT-5bb09e53",
+      "text": "Golden data is never used for training; lock hash verified by script at split and eval time.",
+      "source": "docs/decisions/ADR-0007-golden-isolation.md",
+      "recorded_at": "2026-09-29T16:57:40.506Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "INVARIANT-29af3c92",
+      "text": "The human is the final authority for curated data, golden lock, results, and model versions; no automated step may decide these.",
+      "source": "docs/decisions/ADR-0005-human-in-loop.md",
+      "recorded_at": "2026-09-29T16:57:41.104Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "INVARIANT-3e114925",
+      "text": "No dataset download, training code, or GPU execution before spec and plan approval.",
+      "source": "SPEC.md",
+      "recorded_at": "2026-09-29T16:57:41.747Z",
+      "paths": [],
+      "tags": []
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DECISION-9401f004",
+      "title": "v1 single-stage SFT; action labels metadata-only",
+      "text": "Train one LoRA/QLoRA SFT pass on curated atomic examples. Action labels used for review prioritization and eval slicing only. Two-stage/action-prefix training deferred to a T12 iteration if eval shows systematic action errors. See ADR-0003.",
+      "status": "accepted",
+      "source": "docs/decisions/ADR-0003-two-stage.md",
+      "recorded_at": "2026-09-29T16:57:07.803Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "DECISION-8c92947d",
+      "title": "Golden isolation via locked store and grouped splitting",
+      "text": "Golden lives in a separate locked store; splits allocate whole conversation groups with dedup before allocation; contamination checks gate T9 and T11. See ADR-0007.",
+      "status": "accepted",
+      "source": "docs/decisions/ADR-0007-golden-isolation.md",
+      "recorded_at": "2026-09-29T16:57:08.416Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "DECISION-0ce1c632",
+      "title": "Negatives excluded from SFT, reserved for preference data",
+      "text": "Rejected examples kept with reason codes for eval slices, failure analysis, and future DPO pairs. Never mixed into ordinary SFT. See ADR-0008.",
+      "status": "accepted",
+      "source": "docs/decisions/ADR-0008-negative-strategy.md",
+      "recorded_at": "2026-09-29T16:57:09.071Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "DECISION-b2fa651e",
+      "title": "Job-spec contract for remote GPU execution",
+      "text": "Repo stays source of truth; GPU backend executes a declarative approved job spec and returns artifacts. Manual Colab transfer in v1; automation later. See ADR-0010.",
+      "status": "accepted",
+      "source": "docs/decisions/ADR-0010-colab-gpu-execution.md",
+      "recorded_at": "2026-09-29T16:57:09.706Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "DECISION-ac2e937a",
+      "title": "Unsloth as the v1 training framework",
+      "text": "Human-decided 2026-09-30: v1 LoRA/QLoRA SFT executes via Unsloth on the free-tier GPU backend (Colab first), driven by the declarative job spec with pinned unsloth version. Vanilla TRL+PEFT is the fallback if the T10 base-model pick lacks Unsloth support. Recorded as ADR-0013; ML architecture and environment docs updated. FR-11 unchanged (framework-agnostic).",
+      "status": "accepted",
+      "source": null,
+      "recorded_at": "2026-09-30T07:35:52.270Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "DECISION-e094e022",
+      "title": "T5 v1 uses deterministic rules triage, LLM deferred",
+      "text": "T5 triage v1 is a deterministic rulepack (model rules-triage/v1, rubric triage/v1), not an LLM call: the agent sandbox has no network access and gates require byte-identical re-runs, which an API model cannot promise. LLM triage is deferred to a T12 iteration if AC-T5-2 calibration shows rules failing. Rules lean safe (any dimension <=2 routes to REVIEW or REJECT); only T6 moves records into stores.",
+      "status": "accepted",
+      "source": "configs/triage.yaml",
+      "recorded_at": "2026-10-05T19:24:08.343Z",
+      "paths": [],
+      "tags": []
+    },
+    {
+      "id": "DECISION-325e3181",
+      "title": "AC-T5-2 human calibration waived for T5-1 v1",
+      "text": "Human (ARIF) waived the AC-T5-2 100-record human calibration for T5-1 v1 (2026-10-05): researcher bandwidth. Substitute evidence: agent smoke-graded 100 blind-ish records (47/100 agreement; rules err 45x toward REVIEW vs 5x toward leniency, i.e. safe direction) and audited every REJECT after precision tuning (837 -> 8 survivors, 8/8 correct). Report agreement is therefore labeled grader=agent, not human. Residual risk: semantic misses in ACCEPT that rules cannot see (1 observed: confident-wrong remote diagnosis); mitigation: T6 human review disposes all REVIEW plus an ACCEPT audit sample. The sample file keeps human_verdict fields, so a real human calibration can still run later.",
+      "status": "accepted",
+      "source": "data/processed/triage_report.json",
+      "recorded_at": "2026-10-05T20:19:13.148Z",
+      "paths": [],
+      "tags": []
+    }
+  ],
+  "knowledge": [
+    {
+      "id": "KNOWLEDGE-709e6384",
+      "title": "Sandboxed genesis CLI needs TEMP redirect",
+      "text": "The genesis CLI writes lockfiles to system Temp, which sandboxed shells cannot write. Set TEMP/TMP/TMPDIR to a writable dir before invoking genesis in this environment.",
+      "source": "session 2026-09-29",
+      "tags": [],
+      "recorded_at": "2026-09-29T16:57:43.556Z",
+      "paths": []
+    },
+    {
+      "id": "KNOWLEDGE-8c51c018",
+      "title": "iCliniq raw data provenance (T2 input)",
+      "text": "data/raw/iCliniq.json (7321 records) staged by human on 2026-09-30 from the ChatDoctor GitHub repo icliniq.json eval set (mirror of Kent0n-Li/ChatDoctor; also on HF as lavita/ChatDoctor-iCliniq). Repo LICENSE file is Apache-2.0 (code); README Limitations restricts data/model to academic research only, no commercial or clinical use. Compatible with this personal research project. Formal MANIFEST.json with hashes is T2 work.",
+      "source": "https://github.com/AbdelAbys/ChatDoctor",
+      "tags": [],
+      "recorded_at": "2026-09-30T06:53:06.904Z",
+      "paths": []
+    },
+    {
+      "id": "KNOWLEDGE-df84159e",
+      "title": "Opus raw data provenance (T2 input)",
+      "text": "data/raw/opusdiseaseconversations.jsonl (2197 records, 53277338 bytes, byte-identical to Hub copy) staged by human on 2026-09-30 from HF dataset nisten/opus-doctor-patient-conversations-all-human-diseases (Opus 4.8 synthetic doctor-patient conversations for all human diseases). License: MIT. Known data flaw per author: hallucinated PubMed IDs. Formal MANIFEST.json with hashes is T2 work.",
+      "source": "https://huggingface.co/datasets/nisten/opus-doctor-patient-conversations-all-human-diseases",
+      "tags": [],
+      "recorded_at": "2026-09-30T06:59:54.073Z",
+      "paths": []
+    },
+    {
+      "id": "KNOWLEDGE-405f51a0",
+      "title": "Task scopes must include data output dirs",
+      "text": "No-git fallback in inputManifest hashes the whole tree (hg repo: git ls-files unavailable), so task completion fails on derived data outside scope. Every implementation task scope must list its data output dirs (data/processed/, data/curated/, data/negative/, data/splits/, data/golden/, artifacts/, experiments/). Amended 2026-09-30 for T3-1..T11-1; T2-1/T12-1/T13-1 already correct.",
+      "source": null,
+      "tags": [],
+      "recorded_at": "2026-09-30T08:10:14.291Z",
+      "paths": []
+    },
+    {
+      "id": "KNOWLEDGE-1ddfcfaa",
+      "title": "AC-T4-3 spot-check verdict (T4-1)",
+      "text": "Human (ARIF) reviewed data/processed/spotcheck_T4.md (50 records, seed 42) on 2026-10-05: extraction errors under 10 percent. AC-T4-3 passes.",
+      "source": "data/processed/spotcheck_T4.md",
+      "tags": [],
+      "recorded_at": "2026-10-05T18:41:58.809Z",
+      "paths": []
+    }
+  ],
+  "tasks": [
+    {
+      "id": "SPEC-1",
+      "outcome": "Produce an approved, implementation-ready product specification",
+      "state": "done",
+      "risk": "medium",
+      "owner": null,
+      "scope": [
+        "SPEC.md"
+      ],
+      "dependencies": [],
+      "requirements": [],
+      "gates": [
+        {
+          "id": "independent-review",
+          "command": "",
+          "mandatory": true,
+          "status": "pass",
+          "evidence": {
+            "human": "ARIF",
+            "reason": "Reviewed SPEC.md in full; approved with Unsloth as v1 training framework (ADR-0013). Training on free-tier GPU backend (Colab first).",
+            "source_hash": "16c857a6b86df214de8eabb2a1d46a739868860fe05995d39835099e9343cdcc",
+            "observed_at": "2026-09-30T07:36:30.457Z"
+          },
+          "kind": "review"
+        }
+      ],
+      "next_action": "Interview the human, record durable context, and replace every placeholder in SPEC.md.",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-29T16:48:38.282Z",
+      "updated_at": "2026-09-30T07:36:30.457Z"
+    },
+    {
+      "id": "T2-1",
+      "outcome": "Raw files ingested into write-once store with verified manifest",
+      "state": "done",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "data/raw/MANIFEST.json",
+        "scripts/build_manifest.py",
+        "scripts/verify_manifest.py"
+      ],
+      "dependencies": [],
+      "requirements": [
+        "FR-1",
+        "AC-10"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "verify-manifest",
+          "kind": "command",
+          "command": "uv run python scripts/verify_manifest.py",
+          "mandatory": true,
+          "status": "pass",
+          "evidence": {
+            "path": ".genesis/evidence/T2-1-verify-manifest-e87ccf36-cbdf-4529-acb3-5d37f30bead7.json",
+            "hash": "6f192eb0a378cf89ad762e38141a6dd8d92ea405bc7b1f07dc5535a3bff669c0",
+            "source_hash": "01c761382284bd181c05282983f97891c8ae29ee79c47712c9af5c9129a80f91",
+            "config_hash": "76eef0686ec57c79740d852c17b1f818e3ddef0fe0b7b120df7de163327c3090",
+            "observed_at": "2026-09-30T07:53:50.760Z"
+          }
+        }
+      ],
+      "next_action": "Write manifest builder + verify script, run gate, mark data/raw read-only",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:38:17.846Z",
+      "updated_at": "2026-09-30T07:54:07.286Z",
+      "base_manifest": {
+        ".gitignore": "ebb2da4d3478d1b15617da5f5c38516714f88d05b080e9cb75747d182091600e",
+        ".python-version": "cf842d27b2e4ee76c96e26412d2fee454f74632d6a35f1fd821a5020da0b3965",
+        "AGENTS.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "CLAUDE.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "README.md": "56262ea3c42a5899aab860001a54d5b8f0ce5779c19eab62e1b5d363d0cce96f",
+        "SPEC.md": "c76152e0886484ec5da12d50bbe7dba2cf8eff47ab032dfda8a2315c8e951953",
+        "data/raw/iCliniq.json": "6ace26f14fc4eff4b2554ce268a843c7ec90bf4a9b9febfc4bc9d596ee472ee6",
+        "data/raw/opusdiseaseconversations.jsonl": "9a014679919ae7e11ac7f1d11ef5432681243ad85ebb7968c3d07a7a4db8176d",
+        "diagrams/diagrams.md": "351eb75f5cb03fab8fc6985bf8790f95a33066cda688572eae48d61146922515",
+        "docs/architecture/data-architecture.md": "f8b5b6b7f618821afc3947418ac62acc65dfcfefa64390ad50b247543e28aaba",
+        "docs/architecture/environment-design.md": "d73ebd199c791ec68ab0f9874483a3fb35285e98afca65907b7fb8bde98f3a0f",
+        "docs/architecture/ml-architecture.md": "1120b571f533652802ab87f7df50d153efb88859d96a4eecfb05453ae647df9f",
+        "docs/architecture/remote-gpu-design.md": "860a45c9ae055555ccee7e1a343def234b160df3a9f577b75db08bc00f2956b9",
+        "docs/architecture/system-design.md": "fec546eb29e7517a2999309d02410305177ccdd687bf28a9d8e9eb039ef43fb3",
+        "docs/data/curation-strategy.md": "d4d8cdac1ab38dce063313875f00df64196e92a2af0d6055815cc40a4d25ada4",
+        "docs/data/data-contract.md": "56aec1cb4b2186c9def35129083f086b54275ddcdf522f0cbaaa4712036b07b6",
+        "docs/decisions/ADR-0001-why-slm.md": "174510659b2904f76996caf5be3e3d20a875627a54e3c434f1f5cd404ab472a0",
+        "docs/decisions/ADR-0002-atomic-representation.md": "1aae3f5eee373355ccff5686691cf036ad76836f3e0b1318b51349061530c9cb",
+        "docs/decisions/ADR-0003-two-stage.md": "395d0bac7984917564b4e5d25615cf3c45d3908b246d2541a81fe25e81dfeb90",
+        "docs/decisions/ADR-0004-source-immutability.md": "32f9eb07365e41b8f95a417d06895792a252d4334fe3c26e2aa0459b2c3c7a63",
+        "docs/decisions/ADR-0005-human-in-loop.md": "b5c48b7f902a0bf766c6ef54dd53236359d87f2976831b98a71a28d488345797",
+        "docs/decisions/ADR-0006-provenance-versioning.md": "84a6acfb3a3111666f5f1df3d410ab029941a4818deb65698fb54f001ff46f54",
+        "docs/decisions/ADR-0007-golden-isolation.md": "17c285d1b38e79a4ac8338cf387d0ecc0038fe3fdaec5ead8ada7f9487fda29f",
+        "docs/decisions/ADR-0008-negative-strategy.md": "7ea0188944d7c059c166b850d048812fbfc0867a0344587d21bfaffbf416779f",
+        "docs/decisions/ADR-0009-lora-qlora.md": "97de63b8457e479b3a1e077632de1c66b52a828b8c7464728e93f731b84b435d",
+        "docs/decisions/ADR-0010-colab-gpu-execution.md": "b1c5950db40337c4a23ad05baae4b3cc9db1097ff9c97c582400f786b7ff8383",
+        "docs/decisions/ADR-0011-baseline-eval.md": "960fd57abe7edaadd368e9b420d4f72880ce1653c1542e2fe4ea7e1ee252afd0",
+        "docs/decisions/ADR-0012-uv-package-management.md": "f61eb90b229ad8db4d3e0402df1063ed6719041a0b286f340e9e0e2d52b76ec0",
+        "docs/decisions/ADR-0013-unsloth-training.md": "907bf35d640044e59a773fb5bee7bb4737a10368473c3689a4c35dd510c0767e",
+        "docs/evaluation/evaluation-strategy.md": "d18833c26b3bf9640935f77e23b1d07948c89965a9404919bcd32d9da0b05e97",
+        "docs/glossary.md": "37a49441e221a0b11d8a3c1ec2f28ece88fa3a453bf771a37295db783ffd79c9",
+        "docs/problem/problem-statement.md": "78066d2cefb63f125c035349c326b3420fcd2d4ca352d6aa61c5ef51e9779d6d",
+        "docs/training/README.md": "fc4d3aadf8d994e2710a83220cc566d119865bab890d8b49862b0184d8f52011",
+        "docs/workflow/t1-t12-workflow.md": "26878aca2f780ed60baececc092c6ff751e8ae29edb27d6e05fb65ceb680ebb2",
+        "docs/workflow/task-gate-map.md": "b9de5196afa05d7045f4e3b48d9c16626e769d9859de630ede674be0d1552766",
+        "pyproject.toml": "ea582a1be948f1c876de45ad1479cce3bfd0bdad13c0f5073a0216bcc03d16dc",
+        "uv.lock": "d024590f2ea6d12a84075274a07e75093ec542f88398667849be607543103436"
+      }
+    },
+    {
+      "id": "T3-1",
+      "outcome": "Raw conversations normalized to schema with quarantine",
+      "state": "done",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "src/structuring/",
+        "scripts/check_structured.py",
+        "data/processed/"
+      ],
+      "dependencies": [
+        "T2-1"
+      ],
+      "requirements": [
+        "FR-2"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-structured",
+          "kind": "command",
+          "command": "uv run python scripts/check_structured.py",
+          "mandatory": true,
+          "status": "pass",
+          "evidence": {
+            "path": ".genesis/evidence/T3-1-check-structured-262cbad7-3717-4d06-a91c-1b37c2df1a39.json",
+            "hash": "bc09e614e0bb7390508c3c3279e969a80071fe307ee8c9d4a4f969683db3b6f1",
+            "source_hash": "3c21bdca830f05a35077741106ae437edf9bb2bcb034c405ef41b46ae1c94abc",
+            "config_hash": "32958335145e46c8747a95bafda1b610995f9b81b3221581674cccda8d4c7edf",
+            "observed_at": "2026-09-30T08:13:56.981Z"
+          }
+        }
+      ],
+      "next_action": "Write structuring + validation, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:43:55.219Z",
+      "updated_at": "2026-09-30T08:14:00.290Z",
+      "base_manifest": {
+        ".gitignore": "ebb2da4d3478d1b15617da5f5c38516714f88d05b080e9cb75747d182091600e",
+        ".python-version": "cf842d27b2e4ee76c96e26412d2fee454f74632d6a35f1fd821a5020da0b3965",
+        "AGENTS.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "CLAUDE.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "README.md": "56262ea3c42a5899aab860001a54d5b8f0ce5779c19eab62e1b5d363d0cce96f",
+        "SPEC.md": "c76152e0886484ec5da12d50bbe7dba2cf8eff47ab032dfda8a2315c8e951953",
+        "data/raw/MANIFEST.json": "19a3f0ac20382c78f2f7980a41b2e7fe9728600dd39e6106de35241399b8127b",
+        "data/raw/iCliniq.json": "6ace26f14fc4eff4b2554ce268a843c7ec90bf4a9b9febfc4bc9d596ee472ee6",
+        "data/raw/opusdiseaseconversations.jsonl": "9a014679919ae7e11ac7f1d11ef5432681243ad85ebb7968c3d07a7a4db8176d",
+        "diagrams/diagrams.md": "351eb75f5cb03fab8fc6985bf8790f95a33066cda688572eae48d61146922515",
+        "docs/architecture/data-architecture.md": "f8b5b6b7f618821afc3947418ac62acc65dfcfefa64390ad50b247543e28aaba",
+        "docs/architecture/environment-design.md": "d73ebd199c791ec68ab0f9874483a3fb35285e98afca65907b7fb8bde98f3a0f",
+        "docs/architecture/ml-architecture.md": "1120b571f533652802ab87f7df50d153efb88859d96a4eecfb05453ae647df9f",
+        "docs/architecture/remote-gpu-design.md": "860a45c9ae055555ccee7e1a343def234b160df3a9f577b75db08bc00f2956b9",
+        "docs/architecture/system-design.md": "fec546eb29e7517a2999309d02410305177ccdd687bf28a9d8e9eb039ef43fb3",
+        "docs/data/curation-strategy.md": "d4d8cdac1ab38dce063313875f00df64196e92a2af0d6055815cc40a4d25ada4",
+        "docs/data/data-contract.md": "56aec1cb4b2186c9def35129083f086b54275ddcdf522f0cbaaa4712036b07b6",
+        "docs/decisions/ADR-0001-why-slm.md": "174510659b2904f76996caf5be3e3d20a875627a54e3c434f1f5cd404ab472a0",
+        "docs/decisions/ADR-0002-atomic-representation.md": "1aae3f5eee373355ccff5686691cf036ad76836f3e0b1318b51349061530c9cb",
+        "docs/decisions/ADR-0003-two-stage.md": "395d0bac7984917564b4e5d25615cf3c45d3908b246d2541a81fe25e81dfeb90",
+        "docs/decisions/ADR-0004-source-immutability.md": "32f9eb07365e41b8f95a417d06895792a252d4334fe3c26e2aa0459b2c3c7a63",
+        "docs/decisions/ADR-0005-human-in-loop.md": "b5c48b7f902a0bf766c6ef54dd53236359d87f2976831b98a71a28d488345797",
+        "docs/decisions/ADR-0006-provenance-versioning.md": "84a6acfb3a3111666f5f1df3d410ab029941a4818deb65698fb54f001ff46f54",
+        "docs/decisions/ADR-0007-golden-isolation.md": "17c285d1b38e79a4ac8338cf387d0ecc0038fe3fdaec5ead8ada7f9487fda29f",
+        "docs/decisions/ADR-0008-negative-strategy.md": "7ea0188944d7c059c166b850d048812fbfc0867a0344587d21bfaffbf416779f",
+        "docs/decisions/ADR-0009-lora-qlora.md": "97de63b8457e479b3a1e077632de1c66b52a828b8c7464728e93f731b84b435d",
+        "docs/decisions/ADR-0010-colab-gpu-execution.md": "b1c5950db40337c4a23ad05baae4b3cc9db1097ff9c97c582400f786b7ff8383",
+        "docs/decisions/ADR-0011-baseline-eval.md": "960fd57abe7edaadd368e9b420d4f72880ce1653c1542e2fe4ea7e1ee252afd0",
+        "docs/decisions/ADR-0012-uv-package-management.md": "f61eb90b229ad8db4d3e0402df1063ed6719041a0b286f340e9e0e2d52b76ec0",
+        "docs/decisions/ADR-0013-unsloth-training.md": "907bf35d640044e59a773fb5bee7bb4737a10368473c3689a4c35dd510c0767e",
+        "docs/evaluation/evaluation-strategy.md": "d18833c26b3bf9640935f77e23b1d07948c89965a9404919bcd32d9da0b05e97",
+        "docs/glossary.md": "37a49441e221a0b11d8a3c1ec2f28ece88fa3a453bf771a37295db783ffd79c9",
+        "docs/problem/problem-statement.md": "78066d2cefb63f125c035349c326b3420fcd2d4ca352d6aa61c5ef51e9779d6d",
+        "docs/training/README.md": "fc4d3aadf8d994e2710a83220cc566d119865bab890d8b49862b0184d8f52011",
+        "docs/workflow/t1-t12-workflow.md": "26878aca2f780ed60baececc092c6ff751e8ae29edb27d6e05fb65ceb680ebb2",
+        "docs/workflow/task-gate-map.md": "b9de5196afa05d7045f4e3b48d9c16626e769d9859de630ede674be0d1552766",
+        "pyproject.toml": "ea582a1be948f1c876de45ad1479cce3bfd0bdad13c0f5073a0216bcc03d16dc",
+        "scripts/build_manifest.py": "36878564846e15214e34d838374f80613c0c932c469b58ea588c3857ee8449b5",
+        "scripts/verify_manifest.py": "5c0cb038539c202c2f8834311977d107d97f0d6b96b0a33435f203f935fbae71",
+        "uv.lock": "d024590f2ea6d12a84075274a07e75093ec542f88398667849be607543103436"
+      }
+    },
+    {
+      "id": "T4-1",
+      "outcome": "Atomic decision-point examples extracted with provenance",
+      "state": "done",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "src/curation/",
+        "scripts/check_atomic.py",
+        "data/processed/"
+      ],
+      "dependencies": [
+        "T3-1"
+      ],
+      "requirements": [
+        "FR-3"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-atomic",
+          "kind": "command",
+          "command": "uv run python scripts/check_atomic.py",
+          "mandatory": true,
+          "status": "pass",
+          "evidence": {
+            "path": ".genesis/evidence/T4-1-check-atomic-80cfc8eb-309a-46ce-967d-834094f95cf5.json",
+            "hash": "347d361d7adb819e2baeb8efaa722a72afe70f28b3668bad761fa0712257a479",
+            "source_hash": "a100f2cdd15cc25a7f348661f1f3f177d2fcefe8d85ce2b7af72eca8624aa587",
+            "config_hash": "99cbf5ab2b330ea558d306f5cfb952e82e0ff068e9d2736d4d309ffd9c273eab",
+            "observed_at": "2026-10-05T18:54:34.210Z"
+          }
+        }
+      ],
+      "next_action": "Write extractor + checks, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:43:56.517Z",
+      "updated_at": "2026-10-05T18:54:51.147Z",
+      "base_manifest": {
+        ".gitignore": "ebb2da4d3478d1b15617da5f5c38516714f88d05b080e9cb75747d182091600e",
+        ".python-version": "cf842d27b2e4ee76c96e26412d2fee454f74632d6a35f1fd821a5020da0b3965",
+        "AGENTS.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "CLAUDE.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "README.md": "56262ea3c42a5899aab860001a54d5b8f0ce5779c19eab62e1b5d363d0cce96f",
+        "SPEC.md": "c76152e0886484ec5da12d50bbe7dba2cf8eff47ab032dfda8a2315c8e951953",
+        "data/processed/MANIFEST.json": "91536d2dff2b7dcf4822fbcc60da66b429406486474e7f485eb9da8d45529121",
+        "data/processed/conversations.jsonl": "ea54af9a91b5c158b915eb2cb226419bbc51289158b94f479a3d6c872d1a4c2d",
+        "data/processed/quarantine.jsonl": "78fb5f112b9e331e6d45cc7ba20c364344137c40dce44296fbdbe7854ba5bea2",
+        "data/raw/MANIFEST.json": "19a3f0ac20382c78f2f7980a41b2e7fe9728600dd39e6106de35241399b8127b",
+        "data/raw/iCliniq.json": "6ace26f14fc4eff4b2554ce268a843c7ec90bf4a9b9febfc4bc9d596ee472ee6",
+        "data/raw/opusdiseaseconversations.jsonl": "9a014679919ae7e11ac7f1d11ef5432681243ad85ebb7968c3d07a7a4db8176d",
+        "diagrams/diagrams.md": "351eb75f5cb03fab8fc6985bf8790f95a33066cda688572eae48d61146922515",
+        "docs/architecture/data-architecture.md": "f8b5b6b7f618821afc3947418ac62acc65dfcfefa64390ad50b247543e28aaba",
+        "docs/architecture/environment-design.md": "d73ebd199c791ec68ab0f9874483a3fb35285e98afca65907b7fb8bde98f3a0f",
+        "docs/architecture/ml-architecture.md": "1120b571f533652802ab87f7df50d153efb88859d96a4eecfb05453ae647df9f",
+        "docs/architecture/remote-gpu-design.md": "860a45c9ae055555ccee7e1a343def234b160df3a9f577b75db08bc00f2956b9",
+        "docs/architecture/system-design.md": "fec546eb29e7517a2999309d02410305177ccdd687bf28a9d8e9eb039ef43fb3",
+        "docs/data/curation-strategy.md": "d4d8cdac1ab38dce063313875f00df64196e92a2af0d6055815cc40a4d25ada4",
+        "docs/data/data-contract.md": "56aec1cb4b2186c9def35129083f086b54275ddcdf522f0cbaaa4712036b07b6",
+        "docs/decisions/ADR-0001-why-slm.md": "174510659b2904f76996caf5be3e3d20a875627a54e3c434f1f5cd404ab472a0",
+        "docs/decisions/ADR-0002-atomic-representation.md": "1aae3f5eee373355ccff5686691cf036ad76836f3e0b1318b51349061530c9cb",
+        "docs/decisions/ADR-0003-two-stage.md": "395d0bac7984917564b4e5d25615cf3c45d3908b246d2541a81fe25e81dfeb90",
+        "docs/decisions/ADR-0004-source-immutability.md": "32f9eb07365e41b8f95a417d06895792a252d4334fe3c26e2aa0459b2c3c7a63",
+        "docs/decisions/ADR-0005-human-in-loop.md": "b5c48b7f902a0bf766c6ef54dd53236359d87f2976831b98a71a28d488345797",
+        "docs/decisions/ADR-0006-provenance-versioning.md": "84a6acfb3a3111666f5f1df3d410ab029941a4818deb65698fb54f001ff46f54",
+        "docs/decisions/ADR-0007-golden-isolation.md": "17c285d1b38e79a4ac8338cf387d0ecc0038fe3fdaec5ead8ada7f9487fda29f",
+        "docs/decisions/ADR-0008-negative-strategy.md": "7ea0188944d7c059c166b850d048812fbfc0867a0344587d21bfaffbf416779f",
+        "docs/decisions/ADR-0009-lora-qlora.md": "97de63b8457e479b3a1e077632de1c66b52a828b8c7464728e93f731b84b435d",
+        "docs/decisions/ADR-0010-colab-gpu-execution.md": "b1c5950db40337c4a23ad05baae4b3cc9db1097ff9c97c582400f786b7ff8383",
+        "docs/decisions/ADR-0011-baseline-eval.md": "960fd57abe7edaadd368e9b420d4f72880ce1653c1542e2fe4ea7e1ee252afd0",
+        "docs/decisions/ADR-0012-uv-package-management.md": "f61eb90b229ad8db4d3e0402df1063ed6719041a0b286f340e9e0e2d52b76ec0",
+        "docs/decisions/ADR-0013-unsloth-training.md": "907bf35d640044e59a773fb5bee7bb4737a10368473c3689a4c35dd510c0767e",
+        "docs/evaluation/evaluation-strategy.md": "d18833c26b3bf9640935f77e23b1d07948c89965a9404919bcd32d9da0b05e97",
+        "docs/glossary.md": "37a49441e221a0b11d8a3c1ec2f28ece88fa3a453bf771a37295db783ffd79c9",
+        "docs/problem/problem-statement.md": "78066d2cefb63f125c035349c326b3420fcd2d4ca352d6aa61c5ef51e9779d6d",
+        "docs/training/README.md": "fc4d3aadf8d994e2710a83220cc566d119865bab890d8b49862b0184d8f52011",
+        "docs/workflow/t1-t12-workflow.md": "26878aca2f780ed60baececc092c6ff751e8ae29edb27d6e05fb65ceb680ebb2",
+        "docs/workflow/task-gate-map.md": "b9de5196afa05d7045f4e3b48d9c16626e769d9859de630ede674be0d1552766",
+        "pyproject.toml": "ea582a1be948f1c876de45ad1479cce3bfd0bdad13c0f5073a0216bcc03d16dc",
+        "scripts/build_manifest.py": "36878564846e15214e34d838374f80613c0c932c469b58ea588c3857ee8449b5",
+        "scripts/check_structured.py": "773c64711b1a20f2dd3ea82fb6792cf6cb0d9f0373bf9d382bf4f6ef9f3be811",
+        "scripts/verify_manifest.py": "5c0cb038539c202c2f8834311977d107d97f0d6b96b0a33435f203f935fbae71",
+        "src/structuring/normalize.py": "ce9296fdd5918f05fbfa51897462acb344012968a2eea4bc192605ca6fb1a9ff",
+        "uv.lock": "d024590f2ea6d12a84075274a07e75093ec542f88398667849be607543103436"
+      }
+    },
+    {
+      "id": "T5-1",
+      "outcome": "Atomic examples triaged ACCEPT/REVIEW/REJECT with scores",
+      "state": "done",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "src/curation/",
+        "configs/triage.yaml",
+        "scripts/check_triage.py",
+        "data/processed/"
+      ],
+      "dependencies": [
+        "T4-1"
+      ],
+      "requirements": [
+        "FR-4"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-triage",
+          "kind": "command",
+          "command": "uv run python scripts/check_triage.py",
+          "mandatory": true,
+          "status": "pass",
+          "evidence": {
+            "path": ".genesis/evidence/T5-1-check-triage-fb154cec-3364-40c1-b938-7b16e6590869.json",
+            "hash": "7b6234a498db568f6ae5a2c730d0aeaa4f3f4d806a63eccdc8f91e3c80d334fb",
+            "source_hash": "76c1611284f339515bb3f58ad647bb01bbc07f18aee3067cabc093d6c1085ab2",
+            "config_hash": "8a40eb16ac4b92a69f518c68cdae3c43b5e7c7e548cdbf7315d94d1332b54787",
+            "observed_at": "2026-10-05T21:05:23.759Z"
+          }
+        }
+      ],
+      "next_action": "Write triage + config + checks, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:43:57.715Z",
+      "updated_at": "2026-10-05T21:05:51.329Z",
+      "base_manifest": {
+        ".gitignore": "ebb2da4d3478d1b15617da5f5c38516714f88d05b080e9cb75747d182091600e",
+        ".python-version": "cf842d27b2e4ee76c96e26412d2fee454f74632d6a35f1fd821a5020da0b3965",
+        "AGENTS.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "CLAUDE.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "README.md": "56262ea3c42a5899aab860001a54d5b8f0ce5779c19eab62e1b5d363d0cce96f",
+        "SPEC.md": "c76152e0886484ec5da12d50bbe7dba2cf8eff47ab032dfda8a2315c8e951953",
+        "data/processed/MANIFEST.json": "4f0250cee14afde6f106fedbb0f2416732ae6f3a7fb5c462d243e1441fb2e3e4",
+        "data/processed/atomic.jsonl": "d00318f9053caed53a40abb88810148316fd9585386850e6a275317c0affe092",
+        "data/processed/conversations.jsonl": "ea54af9a91b5c158b915eb2cb226419bbc51289158b94f479a3d6c872d1a4c2d",
+        "data/processed/quarantine.jsonl": "78fb5f112b9e331e6d45cc7ba20c364344137c40dce44296fbdbe7854ba5bea2",
+        "data/processed/spotcheck_T4.md": "16be8ba98958902f9e939880c65800f79b9743a69a98fbedd58717732e91fc48",
+        "data/raw/MANIFEST.json": "19a3f0ac20382c78f2f7980a41b2e7fe9728600dd39e6106de35241399b8127b",
+        "data/raw/iCliniq.json": "6ace26f14fc4eff4b2554ce268a843c7ec90bf4a9b9febfc4bc9d596ee472ee6",
+        "data/raw/opusdiseaseconversations.jsonl": "9a014679919ae7e11ac7f1d11ef5432681243ad85ebb7968c3d07a7a4db8176d",
+        "diagrams/diagrams.md": "351eb75f5cb03fab8fc6985bf8790f95a33066cda688572eae48d61146922515",
+        "docs/architecture/data-architecture.md": "f8b5b6b7f618821afc3947418ac62acc65dfcfefa64390ad50b247543e28aaba",
+        "docs/architecture/environment-design.md": "d73ebd199c791ec68ab0f9874483a3fb35285e98afca65907b7fb8bde98f3a0f",
+        "docs/architecture/ml-architecture.md": "1120b571f533652802ab87f7df50d153efb88859d96a4eecfb05453ae647df9f",
+        "docs/architecture/remote-gpu-design.md": "860a45c9ae055555ccee7e1a343def234b160df3a9f577b75db08bc00f2956b9",
+        "docs/architecture/system-design.md": "fec546eb29e7517a2999309d02410305177ccdd687bf28a9d8e9eb039ef43fb3",
+        "docs/data/curation-strategy.md": "d4d8cdac1ab38dce063313875f00df64196e92a2af0d6055815cc40a4d25ada4",
+        "docs/data/data-contract.md": "56aec1cb4b2186c9def35129083f086b54275ddcdf522f0cbaaa4712036b07b6",
+        "docs/decisions/ADR-0001-why-slm.md": "174510659b2904f76996caf5be3e3d20a875627a54e3c434f1f5cd404ab472a0",
+        "docs/decisions/ADR-0002-atomic-representation.md": "1aae3f5eee373355ccff5686691cf036ad76836f3e0b1318b51349061530c9cb",
+        "docs/decisions/ADR-0003-two-stage.md": "395d0bac7984917564b4e5d25615cf3c45d3908b246d2541a81fe25e81dfeb90",
+        "docs/decisions/ADR-0004-source-immutability.md": "32f9eb07365e41b8f95a417d06895792a252d4334fe3c26e2aa0459b2c3c7a63",
+        "docs/decisions/ADR-0005-human-in-loop.md": "b5c48b7f902a0bf766c6ef54dd53236359d87f2976831b98a71a28d488345797",
+        "docs/decisions/ADR-0006-provenance-versioning.md": "84a6acfb3a3111666f5f1df3d410ab029941a4818deb65698fb54f001ff46f54",
+        "docs/decisions/ADR-0007-golden-isolation.md": "17c285d1b38e79a4ac8338cf387d0ecc0038fe3fdaec5ead8ada7f9487fda29f",
+        "docs/decisions/ADR-0008-negative-strategy.md": "7ea0188944d7c059c166b850d048812fbfc0867a0344587d21bfaffbf416779f",
+        "docs/decisions/ADR-0009-lora-qlora.md": "97de63b8457e479b3a1e077632de1c66b52a828b8c7464728e93f731b84b435d",
+        "docs/decisions/ADR-0010-colab-gpu-execution.md": "b1c5950db40337c4a23ad05baae4b3cc9db1097ff9c97c582400f786b7ff8383",
+        "docs/decisions/ADR-0011-baseline-eval.md": "960fd57abe7edaadd368e9b420d4f72880ce1653c1542e2fe4ea7e1ee252afd0",
+        "docs/decisions/ADR-0012-uv-package-management.md": "f61eb90b229ad8db4d3e0402df1063ed6719041a0b286f340e9e0e2d52b76ec0",
+        "docs/decisions/ADR-0013-unsloth-training.md": "907bf35d640044e59a773fb5bee7bb4737a10368473c3689a4c35dd510c0767e",
+        "docs/evaluation/evaluation-strategy.md": "d18833c26b3bf9640935f77e23b1d07948c89965a9404919bcd32d9da0b05e97",
+        "docs/glossary.md": "37a49441e221a0b11d8a3c1ec2f28ece88fa3a453bf771a37295db783ffd79c9",
+        "docs/problem/problem-statement.md": "78066d2cefb63f125c035349c326b3420fcd2d4ca352d6aa61c5ef51e9779d6d",
+        "docs/training/README.md": "fc4d3aadf8d994e2710a83220cc566d119865bab890d8b49862b0184d8f52011",
+        "docs/workflow/t1-t12-workflow.md": "26878aca2f780ed60baececc092c6ff751e8ae29edb27d6e05fb65ceb680ebb2",
+        "docs/workflow/task-gate-map.md": "b9de5196afa05d7045f4e3b48d9c16626e769d9859de630ede674be0d1552766",
+        "pyproject.toml": "ea582a1be948f1c876de45ad1479cce3bfd0bdad13c0f5073a0216bcc03d16dc",
+        "scripts/build_manifest.py": "36878564846e15214e34d838374f80613c0c932c469b58ea588c3857ee8449b5",
+        "scripts/check_atomic.py": "870dcd9b87c44ed5ff7066753f7f4774ab9cd0e228f530dc34ba5878b29aef3f",
+        "scripts/check_structured.py": "773c64711b1a20f2dd3ea82fb6792cf6cb0d9f0373bf9d382bf4f6ef9f3be811",
+        "scripts/verify_manifest.py": "5c0cb038539c202c2f8834311977d107d97f0d6b96b0a33435f203f935fbae71",
+        "src/curation/extract.py": "ada8e15dd0841818f21b803a2c89be9af2ecaf677901f981072cbadd265cb22c",
+        "src/structuring/normalize.py": "ce9296fdd5918f05fbfa51897462acb344012968a2eea4bc192605ca6fb1a9ff",
+        "uv.lock": "d024590f2ea6d12a84075274a07e75093ec542f88398667849be607543103436"
+      }
+    },
+    {
+      "id": "T6-1",
+      "outcome": "Human review queue records ACCEPT/EDIT/REJECT decisions",
+      "state": "active",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "src/review/",
+        "scripts/check_review_log.py",
+        "data/processed/"
+      ],
+      "dependencies": [
+        "T5-1"
+      ],
+      "requirements": [
+        "FR-5",
+        "NFR-3"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-review-log",
+          "kind": "command",
+          "command": "uv run python scripts/check_review_log.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write review queue + log checks, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:43:58.935Z",
+      "updated_at": "2026-09-30T08:09:45.000Z",
+      "base_manifest": {
+        ".gitignore": "ebb2da4d3478d1b15617da5f5c38516714f88d05b080e9cb75747d182091600e",
+        ".python-version": "cf842d27b2e4ee76c96e26412d2fee454f74632d6a35f1fd821a5020da0b3965",
+        "AGENTS.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "CLAUDE.md": "a67615d8ed1ed3dd1b0d2cbf874ceb8d4a285c3335cdfc2d785ec80a06daecc1",
+        "README.md": "56262ea3c42a5899aab860001a54d5b8f0ce5779c19eab62e1b5d363d0cce96f",
+        "SPEC.md": "c76152e0886484ec5da12d50bbe7dba2cf8eff47ab032dfda8a2315c8e951953",
+        "configs/triage.yaml": "a4d3fea51249b94932e56e7c8cbf6c35ded418db7c6d0105bc96b98422a2b3ef",
+        "data/processed/MANIFEST.json": "d958d3a600388d5e049515f8f8c4b61508489bb4784d30efe528dc09867d7f09",
+        "data/processed/atomic.jsonl": "d00318f9053caed53a40abb88810148316fd9585386850e6a275317c0affe092",
+        "data/processed/calibration_sample.json": "abb33e2cafd76363a4d1a31325999bb578f121fff22ec869c5ef8cb31cbc6525",
+        "data/processed/conversations.jsonl": "ea54af9a91b5c158b915eb2cb226419bbc51289158b94f479a3d6c872d1a4c2d",
+        "data/processed/quarantine.jsonl": "78fb5f112b9e331e6d45cc7ba20c364344137c40dce44296fbdbe7854ba5bea2",
+        "data/processed/spotcheck_T4.md": "16be8ba98958902f9e939880c65800f79b9743a69a98fbedd58717732e91fc48",
+        "data/processed/triage_report.json": "f2b57bbe98a13937f272e263859b836a211c3264740afa44cc938ff8066c40c9",
+        "data/processed/triaged.jsonl": "92e8c9d40437539319c35f883673d35dde37df35b1816d0aa7f37768a920a627",
+        "data/raw/MANIFEST.json": "19a3f0ac20382c78f2f7980a41b2e7fe9728600dd39e6106de35241399b8127b",
+        "data/raw/iCliniq.json": "6ace26f14fc4eff4b2554ce268a843c7ec90bf4a9b9febfc4bc9d596ee472ee6",
+        "data/raw/opusdiseaseconversations.jsonl": "9a014679919ae7e11ac7f1d11ef5432681243ad85ebb7968c3d07a7a4db8176d",
+        "diagrams/diagrams.md": "351eb75f5cb03fab8fc6985bf8790f95a33066cda688572eae48d61146922515",
+        "docs/architecture/data-architecture.md": "f8b5b6b7f618821afc3947418ac62acc65dfcfefa64390ad50b247543e28aaba",
+        "docs/architecture/environment-design.md": "d73ebd199c791ec68ab0f9874483a3fb35285e98afca65907b7fb8bde98f3a0f",
+        "docs/architecture/ml-architecture.md": "1120b571f533652802ab87f7df50d153efb88859d96a4eecfb05453ae647df9f",
+        "docs/architecture/remote-gpu-design.md": "860a45c9ae055555ccee7e1a343def234b160df3a9f577b75db08bc00f2956b9",
+        "docs/architecture/system-design.md": "fec546eb29e7517a2999309d02410305177ccdd687bf28a9d8e9eb039ef43fb3",
+        "docs/data/curation-strategy.md": "d4d8cdac1ab38dce063313875f00df64196e92a2af0d6055815cc40a4d25ada4",
+        "docs/data/data-contract.md": "56aec1cb4b2186c9def35129083f086b54275ddcdf522f0cbaaa4712036b07b6",
+        "docs/decisions/ADR-0001-why-slm.md": "174510659b2904f76996caf5be3e3d20a875627a54e3c434f1f5cd404ab472a0",
+        "docs/decisions/ADR-0002-atomic-representation.md": "1aae3f5eee373355ccff5686691cf036ad76836f3e0b1318b51349061530c9cb",
+        "docs/decisions/ADR-0003-two-stage.md": "395d0bac7984917564b4e5d25615cf3c45d3908b246d2541a81fe25e81dfeb90",
+        "docs/decisions/ADR-0004-source-immutability.md": "32f9eb07365e41b8f95a417d06895792a252d4334fe3c26e2aa0459b2c3c7a63",
+        "docs/decisions/ADR-0005-human-in-loop.md": "b5c48b7f902a0bf766c6ef54dd53236359d87f2976831b98a71a28d488345797",
+        "docs/decisions/ADR-0006-provenance-versioning.md": "84a6acfb3a3111666f5f1df3d410ab029941a4818deb65698fb54f001ff46f54",
+        "docs/decisions/ADR-0007-golden-isolation.md": "17c285d1b38e79a4ac8338cf387d0ecc0038fe3fdaec5ead8ada7f9487fda29f",
+        "docs/decisions/ADR-0008-negative-strategy.md": "7ea0188944d7c059c166b850d048812fbfc0867a0344587d21bfaffbf416779f",
+        "docs/decisions/ADR-0009-lora-qlora.md": "97de63b8457e479b3a1e077632de1c66b52a828b8c7464728e93f731b84b435d",
+        "docs/decisions/ADR-0010-colab-gpu-execution.md": "b1c5950db40337c4a23ad05baae4b3cc9db1097ff9c97c582400f786b7ff8383",
+        "docs/decisions/ADR-0011-baseline-eval.md": "960fd57abe7edaadd368e9b420d4f72880ce1653c1542e2fe4ea7e1ee252afd0",
+        "docs/decisions/ADR-0012-uv-package-management.md": "f61eb90b229ad8db4d3e0402df1063ed6719041a0b286f340e9e0e2d52b76ec0",
+        "docs/decisions/ADR-0013-unsloth-training.md": "907bf35d640044e59a773fb5bee7bb4737a10368473c3689a4c35dd510c0767e",
+        "docs/evaluation/evaluation-strategy.md": "d18833c26b3bf9640935f77e23b1d07948c89965a9404919bcd32d9da0b05e97",
+        "docs/glossary.md": "37a49441e221a0b11d8a3c1ec2f28ece88fa3a453bf771a37295db783ffd79c9",
+        "docs/problem/problem-statement.md": "78066d2cefb63f125c035349c326b3420fcd2d4ca352d6aa61c5ef51e9779d6d",
+        "docs/training/README.md": "fc4d3aadf8d994e2710a83220cc566d119865bab890d8b49862b0184d8f52011",
+        "docs/workflow/t1-t12-workflow.md": "26878aca2f780ed60baececc092c6ff751e8ae29edb27d6e05fb65ceb680ebb2",
+        "docs/workflow/task-gate-map.md": "b9de5196afa05d7045f4e3b48d9c16626e769d9859de630ede674be0d1552766",
+        "pyproject.toml": "ea582a1be948f1c876de45ad1479cce3bfd0bdad13c0f5073a0216bcc03d16dc",
+        "scripts/build_manifest.py": "36878564846e15214e34d838374f80613c0c932c469b58ea588c3857ee8449b5",
+        "scripts/check_atomic.py": "870dcd9b87c44ed5ff7066753f7f4774ab9cd0e228f530dc34ba5878b29aef3f",
+        "scripts/check_structured.py": "773c64711b1a20f2dd3ea82fb6792cf6cb0d9f0373bf9d382bf4f6ef9f3be811",
+        "scripts/check_triage.py": "fa42cc68f3388870c05c9163bd61a7c5d76b59da9e07f1c6cb4e038f9dcb6e8b",
+        "scripts/verify_manifest.py": "5c0cb038539c202c2f8834311977d107d97f0d6b96b0a33435f203f935fbae71",
+        "src/curation/extract.py": "ada8e15dd0841818f21b803a2c89be9af2ecaf677901f981072cbadd265cb22c",
+        "src/curation/triage.py": "d3b8762fc670613041b19fc06669d2d9bbb811d8e308f670491ab3283a67ad8a",
+        "src/structuring/normalize.py": "ce9296fdd5918f05fbfa51897462acb344012968a2eea4bc192605ca6fb1a9ff",
+        "uv.lock": "d024590f2ea6d12a84075274a07e75093ec542f88398667849be607543103436"
+      }
+    },
+    {
+      "id": "T7-1",
+      "outcome": "Curated and negative stores built with provenance",
+      "state": "queued",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "src/curation/",
+        "scripts/check_provenance.py",
+        "data/curated/",
+        "data/negative/"
+      ],
+      "dependencies": [
+        "T6-1"
+      ],
+      "requirements": [
+        "FR-6",
+        "NFR-1",
+        "AC-3",
+        "AC-4"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-provenance",
+          "kind": "command",
+          "command": "uv run python scripts/check_provenance.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write store builders + provenance checks, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:44:00.244Z",
+      "updated_at": "2026-09-30T08:09:45.000Z"
+    },
+    {
+      "id": "T8-1",
+      "outcome": "Dataset quality checks produce go/no-go report",
+      "state": "queued",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "src/curation/",
+        "scripts/check_quality.py",
+        "data/processed/"
+      ],
+      "dependencies": [
+        "T7-1"
+      ],
+      "requirements": [
+        "FR-7"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-quality",
+          "kind": "command",
+          "command": "uv run python scripts/check_quality.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write quality checks, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:44:01.644Z",
+      "updated_at": "2026-09-30T08:09:45.000Z"
+    },
+    {
+      "id": "T9-1",
+      "outcome": "Seeded splits produced and golden set locked",
+      "state": "queued",
+      "risk": "medium",
+      "owner": null,
+      "scope": [
+        "src/splitting/",
+        "scripts/check_splits.py",
+        "data/splits/",
+        "data/golden/"
+      ],
+      "dependencies": [
+        "T8-1"
+      ],
+      "requirements": [
+        "FR-8",
+        "FR-9",
+        "NFR-2",
+        "NFR-3",
+        "AC-1",
+        "AC-2",
+        "AC-9"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-splits",
+          "kind": "command",
+          "command": "uv run python scripts/check_splits.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        },
+        {
+          "id": "independent-review",
+          "kind": "review",
+          "command": "",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write splitter + lock + checks, get human lock approval, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:44:23.426Z",
+      "updated_at": "2026-09-30T08:09:45.000Z"
+    },
+    {
+      "id": "T10-1",
+      "outcome": "Baseline locked and LoRA SFT executed from approved job spec",
+      "state": "queued",
+      "risk": "medium",
+      "owner": null,
+      "scope": [
+        "src/training/",
+        "experiments/",
+        "scripts/check_baseline.py",
+        "artifacts/"
+      ],
+      "dependencies": [
+        "T9-1"
+      ],
+      "requirements": [
+        "FR-10",
+        "FR-11",
+        "NFR-5",
+        "AC-5"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-baseline",
+          "kind": "command",
+          "command": "uv run python scripts/check_baseline.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        },
+        {
+          "id": "independent-review",
+          "kind": "review",
+          "command": "",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write job spec, get human approval, run backend, verify baseline lock",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:44:24.757Z",
+      "updated_at": "2026-09-30T08:09:45.000Z"
+    },
+    {
+      "id": "T11-1",
+      "outcome": "Same-golden comparison report produced",
+      "state": "queued",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "src/evaluation/",
+        "scripts/check_comparison.py",
+        "experiments/"
+      ],
+      "dependencies": [
+        "T10-1"
+      ],
+      "requirements": [
+        "FR-12",
+        "NFR-7",
+        "AC-6",
+        "AC-7"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-comparison",
+          "kind": "command",
+          "command": "uv run python scripts/check_comparison.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write comparison checks, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:44:25.997Z",
+      "updated_at": "2026-09-30T08:09:45.000Z"
+    },
+    {
+      "id": "T12-1",
+      "outcome": "Error analysis with failure clusters and iteration proposal",
+      "state": "queued",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "experiments/",
+        "scripts/check_analysis.py"
+      ],
+      "dependencies": [
+        "T11-1"
+      ],
+      "requirements": [
+        "FR-13",
+        "NFR-6",
+        "AC-8"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-analysis",
+          "kind": "command",
+          "command": "uv run python scripts/check_analysis.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write analysis + checks, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:44:27.160Z",
+      "updated_at": "2026-09-30T07:44:27.161Z"
+    },
+    {
+      "id": "T13-1",
+      "outcome": "Datasets, splits and runs reproduce from specs and hashes",
+      "state": "queued",
+      "risk": "low",
+      "owner": null,
+      "scope": [
+        "scripts/check_repro.py"
+      ],
+      "dependencies": [
+        "T12-1"
+      ],
+      "requirements": [
+        "FR-14",
+        "NFR-4"
+      ],
+      "inputs": [],
+      "environment": [],
+      "scenarios": [],
+      "gates": [
+        {
+          "id": "check-repro",
+          "kind": "command",
+          "command": "uv run python scripts/check_repro.py",
+          "mandatory": true,
+          "status": "pending",
+          "evidence": null
+        }
+      ],
+      "next_action": "Write repro sweep, run gate",
+      "blocker": null,
+      "notes": [],
+      "failures": [],
+      "limitations": [],
+      "created_at": "2026-09-30T07:44:28.362Z",
+      "updated_at": "2026-09-30T07:44:28.364Z"
+    }
+  ],
+  "learning_proposals": [],
+  "cleanup_proposals": [],
+  "controls": [
+    {
+      "id": "6c5affb2-8b46-45c4-a526-0699514e8b8e",
+      "at": "2026-09-30T08:13:14.255Z",
+      "action": "resume",
+      "task": "T3-1",
+      "human": null,
+      "reason": null,
+      "revision": null
+    }
+  ],
+  "attempts": [
+    {
+      "id": "e87ccf36-cbdf-4529-acb3-5d37f30bead7",
+      "task": "T2-1",
+      "kind": "gate",
+      "command": "uv run python scripts/verify_manifest.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 18176,
+      "child_pid": 4576,
+      "started_at": "2026-09-30T07:53:48.166Z",
+      "status": "passed",
+      "before_hash": "01c761382284bd181c05282983f97891c8ae29ee79c47712c9af5c9129a80f91",
+      "config_hash": "76eef0686ec57c79740d852c17b1f818e3ddef0fe0b7b120df7de163327c3090",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": null,
+      "ended_at": "2026-09-30T07:53:50.760Z"
+    },
+    {
+      "id": "b220d8e2-e104-4e64-9d5d-402d051cbb4a",
+      "task": "T3-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_structured.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 29632,
+      "child_pid": 24156,
+      "started_at": "2026-09-30T08:07:15.797Z",
+      "status": "passed",
+      "before_hash": "3c21bdca830f05a35077741106ae437edf9bb2bcb034c405ef41b46ae1c94abc",
+      "config_hash": "4ed31bcc143fb73c0a91e6bdb5cb88d78034bd29244d500ac6a89dad3a3d1a48",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": null,
+      "ended_at": "2026-09-30T08:07:20.982Z"
+    },
+    {
+      "id": "262cbad7-3717-4d06-a91c-1b37c2df1a39",
+      "task": "T3-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_structured.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 23120,
+      "child_pid": 32848,
+      "started_at": "2026-09-30T08:13:50.893Z",
+      "status": "passed",
+      "before_hash": "3c21bdca830f05a35077741106ae437edf9bb2bcb034c405ef41b46ae1c94abc",
+      "config_hash": "32958335145e46c8747a95bafda1b610995f9b81b3221581674cccda8d4c7edf",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": null,
+      "ended_at": "2026-09-30T08:13:56.981Z"
+    },
+    {
+      "id": "c7a685f6-df17-4fda-9d99-0d6d0d7ec9e3",
+      "task": "T4-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_atomic.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 25908,
+      "child_pid": 28472,
+      "started_at": "2026-10-05T18:19:07.599Z",
+      "status": "failed",
+      "before_hash": "837ff5ccc52f2eb949652b7b9299667a7b323be46b6630956f54b218e21c9c78",
+      "config_hash": "99cbf5ab2b330ea558d306f5cfb952e82e0ff068e9d2736d4d309ffd9c273eab",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": "command-failed",
+      "ended_at": "2026-10-05T18:19:26.243Z"
+    },
+    {
+      "id": "6c7dfe1a-4f56-461f-8d0e-33a2cdd2f021",
+      "task": "T4-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_atomic.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 26548,
+      "child_pid": 29788,
+      "started_at": "2026-10-05T18:31:14.587Z",
+      "status": "passed",
+      "before_hash": "a8ca70f5e87e8aef0cd321ff20db25cf898b8687ebe66e745f87dcb9caf8c386",
+      "config_hash": "99cbf5ab2b330ea558d306f5cfb952e82e0ff068e9d2736d4d309ffd9c273eab",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": null,
+      "ended_at": "2026-10-05T18:31:40.681Z"
+    },
+    {
+      "id": "80cfc8eb-309a-46ce-967d-834094f95cf5",
+      "task": "T4-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_atomic.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 18448,
+      "child_pid": 41880,
+      "started_at": "2026-10-05T18:53:45.165Z",
+      "status": "passed",
+      "before_hash": "a100f2cdd15cc25a7f348661f1f3f177d2fcefe8d85ce2b7af72eca8624aa587",
+      "config_hash": "99cbf5ab2b330ea558d306f5cfb952e82e0ff068e9d2736d4d309ffd9c273eab",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": null,
+      "ended_at": "2026-10-05T18:54:34.210Z"
+    },
+    {
+      "id": "deea99a9-f1a6-4e32-8550-39769d63e2f1",
+      "task": "T5-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_triage.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 13768,
+      "child_pid": 40924,
+      "started_at": "2026-10-05T20:30:57.560Z",
+      "status": "failed",
+      "before_hash": "7dd8adfa092c978306a17c3f9c820071a44eb5c9466bd9bf2aec949d16feadc2",
+      "config_hash": "8a40eb16ac4b92a69f518c68cdae3c43b5e7c7e548cdbf7315d94d1332b54787",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": "timeout",
+      "ended_at": "2026-10-05T20:35:18.827Z"
+    },
+    {
+      "id": "cbd2d029-4cfb-4f39-9d70-b5968ea2163d",
+      "task": "T5-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_triage.py",
+      "timeout": 120000,
+      "authorization": null,
+      "pid": 40188,
+      "child_pid": 32188,
+      "started_at": "2026-10-05T20:35:47.338Z",
+      "status": "failed",
+      "before_hash": "7e82770dfbc916866838a391aa7cd8013c9e9c42fddcae9b6dd14b00e1aa4a0e",
+      "config_hash": "8a40eb16ac4b92a69f518c68cdae3c43b5e7c7e548cdbf7315d94d1332b54787",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": "command-failed",
+      "ended_at": "2026-10-05T20:36:06.788Z"
+    },
+    {
+      "id": "fb154cec-3364-40c1-b938-7b16e6590869",
+      "task": "T5-1",
+      "kind": "gate",
+      "command": "uv run python scripts/check_triage.py",
+      "timeout": 600000,
+      "authorization": null,
+      "pid": 34604,
+      "child_pid": 15532,
+      "started_at": "2026-10-05T21:00:40.592Z",
+      "status": "passed",
+      "before_hash": "76c1611284f339515bb3f58ad647bb01bbc07f18aee3067cabc093d6c1085ab2",
+      "config_hash": "8a40eb16ac4b92a69f518c68cdae3c43b5e7c7e548cdbf7315d94d1332b54787",
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+        "variables": {}
+      },
+      "cost": null,
+      "stop_reason": null,
+      "ended_at": "2026-10-05T21:05:23.759Z"
+    }
+  ],
+  "authorizations": [],
+  "experiments": [],
+  "incidents": [],
+  "discovery": null,
+  "checkpoint": {
+    "at": "2026-10-05T21:26:15.778Z",
+    "revision": {
+      "commit": null,
+      "dirty": null,
+      "source_hash": "51b95ad6e2e50c157649357b2a7f2940cdd1307787e7eb66b8df70e33249779c"
+    },
+    "active_task": "T6-1",
+    "next_action": "Write review queue + log checks, run gate"
+  },
+  "legacy": null
+}

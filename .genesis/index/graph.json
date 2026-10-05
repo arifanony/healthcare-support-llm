@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "project": "SLM",
+  "revision": null,
+  "sourceHash": "9002730fb4196052aa73a8c89394829dc185b8d129356809b39c514f8df3c419",
+  "provenance": {
+    "tool": "genesis-graphizer",
+    "method": "static-analysis",
+    "confidenceScale": "0..1"
+  },
+  "nodes": [
+    {
+      "id": "file:scripts/build_manifest.py",
+      "type": "file",
+      "label": "scripts/build_manifest.py",
+      "path": "scripts/build_manifest.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "cd51b620c2896561031016a669a2dd4e79696f7760297f47b597b9d4a186ff74"
+    },
+    {
+      "id": "file:scripts/check_atomic.py",
+      "type": "file",
+      "label": "scripts/check_atomic.py",
+      "path": "scripts/check_atomic.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "b13a834140a6c25ea62dc98eefee57bf64814b8592ee68c5fff519c9549e8884"
+    },
+    {
+      "id": "file:scripts/check_structured.py",
+      "type": "file",
+      "label": "scripts/check_structured.py",
+      "path": "scripts/check_structured.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "4e535d1d7a9d77b26843f5ff78871e09edeff6d9af78bcf67daca2d5ff86bda2"
+    },
+    {
+      "id": "file:scripts/check_triage.py",
+      "type": "file",
+      "label": "scripts/check_triage.py",
+      "path": "scripts/check_triage.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "387168419858a26d634d61f4b0de1d8c510db59c49dfd02720badb21bd762efa"
+    },
+    {
+      "id": "file:scripts/verify_manifest.py",
+      "type": "file",
+      "label": "scripts/verify_manifest.py",
+      "path": "scripts/verify_manifest.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "40bd9d2930fd9ee423ef2b4096423f507a7ba3b464602efc70b925e4a4ca18b3"
+    },
+    {
+      "id": "file:src/curation/extract.py",
+      "type": "file",
+      "label": "src/curation/extract.py",
+      "path": "src/curation/extract.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "204318bbaf99ce28f5e244f92494e5f6b662083e80c62bac25aa74f8f8ba0651"
+    },
+    {
+      "id": "file:src/curation/triage.py",
+      "type": "file",
+      "label": "src/curation/triage.py",
+      "path": "src/curation/triage.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "bf3a40516a53275dfd8580d535be6e0c8b385dab1badb6c60d31f9fb6a7f36d2"
+    },
+    {
+      "id": "file:src/structuring/normalize.py",
+      "type": "file",
+      "label": "src/structuring/normalize.py",
+      "path": "src/structuring/normalize.py",
+      "language": "python",
+      "confidence": 1,
+      "extractor": "filesystem",
+      "contentHash": "f776bfb1568085ad9e5e89480e6a44fa48ea347aa513317187a2b812736169ca"
+    }
+  ],
+  "edges": [],
+  "warnings": [
+    "Python AST unavailable: python3 failed"
+  ],
+  "stats": {
+    "unresolvedCalls": 0
+  }
+}

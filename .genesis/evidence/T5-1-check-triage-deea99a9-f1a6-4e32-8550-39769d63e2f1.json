@@ -1,0 +1,30 @@
+{
+  "task": "T5-1",
+  "gate": "check-triage",
+  "kind": "command",
+  "attempt": "deea99a9-f1a6-4e32-8550-39769d63e2f1",
+  "command": "uv run python scripts/check_triage.py",
+  "started_at": "2026-10-05T20:30:57.560Z",
+  "observed_at": "2026-10-05T20:35:18.827Z",
+  "exit_code": null,
+  "signal": "SIGKILL",
+  "stdout": "triage store OK: 37487 triaged (18096 ACCEPT, 19383 REVIEW, 8 REJECT), calibration agreement (agent) 54/100 (54.0%), determinism verified\r\n",
+  "stderr": "",
+  "failure": "timeout",
+  "receipt": null,
+  "revision": {
+    "commit": null,
+    "dirty": null
+  },
+  "source_hash": "7dd8adfa092c978306a17c3f9c820071a44eb5c9466bd9bf2aec949d16feadc2",
+  "before_hash": "7dd8adfa092c978306a17c3f9c820071a44eb5c9466bd9bf2aec949d16feadc2",
+  "config_hash": "8a40eb16ac4b92a69f518c68cdae3c43b5e7c7e548cdbf7315d94d1332b54787",
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64",
+    "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+    "variables": {}
+  },
+  "hash": "3da3bcb48f5288c1a544dff6c092772604d893c64c81c5192cd4bd8ae486dc53"
+}

@@ -1,0 +1,13 @@
+digraph genesis {
+  rankdir=LR;
+  node [shape=box,fontname="system-ui"];
+  "file:scripts/build_manifest.py" [label="scripts/build_manifest.py",class="file"];
+  "file:scripts/check_atomic.py" [label="scripts/check_atomic.py",class="file"];
+  "file:scripts/check_structured.py" [label="scripts/check_structured.py",class="file"];
+  "file:scripts/check_triage.py" [label="scripts/check_triage.py",class="file"];
+  "file:scripts/verify_manifest.py" [label="scripts/verify_manifest.py",class="file"];
+  "file:src/curation/extract.py" [label="src/curation/extract.py",class="file"];
+  "file:src/curation/triage.py" [label="src/curation/triage.py",class="file"];
+  "file:src/structuring/normalize.py" [label="src/structuring/normalize.py",class="file"];
+
+}

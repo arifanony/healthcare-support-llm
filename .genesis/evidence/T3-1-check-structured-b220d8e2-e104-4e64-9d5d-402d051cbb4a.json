@@ -1,0 +1,30 @@
+{
+  "task": "T3-1",
+  "gate": "check-structured",
+  "kind": "command",
+  "attempt": "b220d8e2-e104-4e64-9d5d-402d051cbb4a",
+  "command": "uv run python scripts/check_structured.py",
+  "started_at": "2026-09-30T08:07:15.797Z",
+  "observed_at": "2026-09-30T08:07:20.982Z",
+  "exit_code": 0,
+  "signal": null,
+  "stdout": "structured store OK: 9518 conversations, 0 quarantined, coverage + determinism verified\r\n",
+  "stderr": "",
+  "failure": null,
+  "receipt": null,
+  "revision": {
+    "commit": null,
+    "dirty": null
+  },
+  "source_hash": "3c21bdca830f05a35077741106ae437edf9bb2bcb034c405ef41b46ae1c94abc",
+  "before_hash": "3c21bdca830f05a35077741106ae437edf9bb2bcb034c405ef41b46ae1c94abc",
+  "config_hash": "4ed31bcc143fb73c0a91e6bdb5cb88d78034bd29244d500ac6a89dad3a3d1a48",
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64",
+    "verifier": "358371454f03eb4fdfd3eda3cb1d18cb1dd8fe9445404bb3d3047267b3977eb9",
+    "variables": {}
+  },
+  "hash": "a1edbb41f58c1319c0efcece74808c5bf786d450b8551e993f52c37bcde2f054"
+}
