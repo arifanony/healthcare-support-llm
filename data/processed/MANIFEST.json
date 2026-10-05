@@ -1,0 +1,32 @@
+{
+  "store": "processed",
+  "created_at": "2026-09-30T07:53:03.954546+00:00",
+  "producer": "script:structuring/normalize.py+script:curation/extract.py+script:curation/triage.py",
+  "files": [
+    {
+      "path": "conversations.jsonl",
+      "sha256": "daaff4c9cbfe0623b407e1877cd842f313c4519f600b4dfc533bcd2c8c582800",
+      "rows": 9518
+    },
+    {
+      "path": "quarantine.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rows": 0
+    },
+    {
+      "path": "atomic.jsonl",
+      "sha256": "d3a7cfa1d8c7b7f0b8d64839e9b2bc1f3d3da4de931143cf016a733ad78553ea",
+      "rows": 37487
+    },
+    {
+      "path": "triaged.jsonl",
+      "sha256": "c58079b06075ced04e2bbaa19438b1a3b5bfcded9a05656c9ec571b1694280e9",
+      "rows": 37487
+    },
+    {
+      "path": "triage_report.json",
+      "sha256": "5b888028caebff0364ea330cc3f2e8b155b7ea064f1b373a73f3bb5924075e8e",
+      "rows": 313
+    }
+  ]
+}

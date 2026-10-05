@@ -1,0 +1,313 @@
+{
+  "report_version": "triage-report/v1",
+  "created_at": "2026-09-30T07:53:03.954546+00:00",
+  "model": "rules-triage/v1",
+  "prompt_version": "triage/v1",
+  "config_hash": "c4a3fe97e01619a7468d4d6ef0d38a261da43e1a82e0bfd1f706283ecad44e49",
+  "n": 37487,
+  "verdict_counts": {
+    "ACCEPT": 18096,
+    "REVIEW": 19383,
+    "REJECT": 8
+  },
+  "dimensions": {
+    "relevance": {
+      "mean": 3.649558513618054,
+      "n_le_2": 4965
+    },
+    "response_quality": {
+      "mean": 3.844132632645984,
+      "n_le_2": 1267
+    },
+    "medical_plausibility": {
+      "mean": 3.0,
+      "n_le_2": 0
+    },
+    "safety": {
+      "mean": 3.4506895723850937,
+      "n_le_2": 10319
+    },
+    "unsupported_claims": {
+      "mean": 3.3505748659535306,
+      "n_le_2": 9635
+    },
+    "hallucination": {
+      "mean": 3.9972790567396697,
+      "n_le_2": 51
+    },
+    "diagnostic_overreach": {
+      "mean": 3.599487822445114,
+      "n_le_2": 7525
+    },
+    "missing_critical_context": {
+      "mean": 3.9988529356843707,
+      "n_le_2": 54
+    },
+    "conversational_appropriateness": {
+      "mean": 4.0,
+      "n_le_2": 0
+    },
+    "empathy_tone": {
+      "mean": 4.03750633552965,
+      "n_le_2": 0
+    },
+    "instruction_adherence": {
+      "mean": 4.0,
+      "n_le_2": 0
+    }
+  },
+  "safety_flag_census": {
+    "unvalidated_claim": 7183,
+    "diagnosis_stated": 7525,
+    "dosage_mentioned": 9635,
+    "emergency_signs_present": 871,
+    "treatment_recommended": 458,
+    "pii_present": 389
+  },
+  "reject_code_census": {
+    "unsafe_response": 8,
+    "missing_important_context": 8
+  },
+  "sample": {
+    "seed": 42,
+    "n": 100
+  },
+  "agreement": {
+    "grader": "agent",
+    "n_graded": 100,
+    "agree": 54,
+    "rate": 0.54,
+    "mismatches": [
+      {
+        "example_id": "e-13b27eb18691193c",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-187fd8e8c3e1e3d0",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-1cabde32dd0cbcf8",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-1f08fc0e9670f352",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-2256d520860b2172",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-2bb8320bbf2b6e87",
+        "triage": "REVIEW",
+        "agent": "REJECT"
+      },
+      {
+        "example_id": "e-3943ea35af9105e6",
+        "triage": "ACCEPT",
+        "agent": "REVIEW"
+      },
+      {
+        "example_id": "e-3c446cb1a0042d53",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-3dbca7ea8a22a781",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-463f56555cbe47f9",
+        "triage": "REVIEW",
+        "agent": "REJECT"
+      },
+      {
+        "example_id": "e-46984be3efce574d",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-49c7b758b597806f",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-59c7abd57cd2b14b",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-5a567454980c5242",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-5b17b2416f43d5e1",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-5e1e2bbadfd38b96",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-61fc5664d7d373ef",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-63bcd0de2352a0a0",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-69b9f23a3854cce4",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-70dd9534e5e0a5c3",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-71a26d168e62e2b8",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-727ff46d1b95e3e0",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-72d03ed714fc1664",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-7c8af2b4171f34f0",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-87559eb88a3bcd16",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-87823daefa4d5387",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-8b7ab0a7e9574c69",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-993f8f041cb4d66f",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-9d75792ca6cb8d0f",
+        "triage": "REVIEW",
+        "agent": "REJECT"
+      },
+      {
+        "example_id": "e-9fe733bc986d3830",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-a41388ec7ab4cea3",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-a4571e0b43d69d1a",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-ab12449d1897feb4",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-ac6063f96520525c",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-ad4198144c649885",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-b8fef9c628ca1a02",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-c3e74ba706dfe3c5",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-c6293d37e53fb209",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-c79609e8ac387bd3",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-d726df1b409a24b3",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-e67da69caf68f5b3",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-e8f16f96393d1232",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-f27e7794f2ca57ce",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-f535b3aa9ad1fb53",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-fcb7d7c760ebb4a0",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      },
+      {
+        "example_id": "e-fd330e6226dcfc57",
+        "triage": "REVIEW",
+        "agent": "ACCEPT"
+      }
+    ]
+  }
+}

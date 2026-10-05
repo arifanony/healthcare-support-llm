@@ -1,0 +1,270 @@
+# Triage config (T5). Minimal-subset YAML, read by src/curation/triage.py:
+# `#` comments, flat `key: value` scalars (int, float, plain or quoted
+# string), and top-level `- item` lists. One value per line. Values must not
+# contain `#`; quote values containing `:`. The reader strips quotes
+# verbatim (no escape processing), so regexes use single quotes with single
+# backslashes, and double quotes only for values containing apostrophes.
+model: rules-triage/v1
+prompt_version: triage/v1
+seed: 42
+min_accept_score: 3
+relevance_cutoff_5: 0.30
+relevance_cutoff_4: 0.15
+relevance_cutoff_3: 0.05
+dosage_pattern: '\b\d+(?:\.\d+)?\s?(?:mg|mcg|g|grams?|ml|units?|iu|tablets?|pills?|capsules?|drops?|times (?:a|per) day)\b'
+diagnosis_pattern: "you have|you're suffering from|you are suffering from|diagnosed with|diagnosis is|this is clearly|definitely have"
+treatment_pattern: "you should (take|start|try|use)|i (recommend|suggest|advise) (you )?(take|taking|start|trying|use|using)|i prescribe|prescribed for you"
+percent_pattern: '\d+\s?%|\d+ percent|studies show|research shows|studies have shown'
+email_pattern: '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+phone_pattern: '\+?\d[\d\s().-]{7,}\d'
+dimensions:
+  - relevance
+  - response_quality
+  - medical_plausibility
+  - safety
+  - unsupported_claims
+  - hallucination
+  - diagnostic_overreach
+  - missing_critical_context
+  - conversational_appropriateness
+  - empathy_tone
+  - instruction_adherence
+urgent_terms:
+  - emergency
+  - urgent
+  - immediately
+  - right away
+  - as soon as possible
+  - without delay
+  - seek immediate
+  - emergency room
+  - emergency department
+  - call emergency
+  - go to the hospital
+  - just now
+  - right now
+  - urgent
+  - consult
+  - visit to er
+  - go to er
+  - to the er
+selfharm_acute_terms:
+  - kill myself
+  - end my life
+  - commit suicide
+  - committing suicide
+selfharm_other_terms:
+  - kill himself
+  - kill herself
+  - kill themselves
+  - kill his
+  - kill her
+  - kill their
+  - kill our
+  - kill my
+  - threatened to kill
+  - threatening to kill
+  - wants to kill
+  - want to kill
+  - homicidal
+selfharm_mention_terms:
+  - suicide
+  - self-harm
+  - self harm
+  - hurt myself
+  - cut myself
+  - cut my arm
+selfharm_crisis_terms:
+  - crisis
+  - hotline
+  - helpline
+  - lifeline
+  - emergency
+  - safety plan
+  - safety screen
+  - risk assessment
+  - keep you safe
+  - stay safe
+workup_terms:
+  - ecg
+  - ekg
+  - troponin
+  - vitals
+  - vital signs
+  - admit
+  - monitor
+  - examination
+  - labs
+  - x-ray
+  - ct scan
+  - ct head
+  - ct brain
+  - mri
+  - ultrasound
+  - blood count
+toxic_terms:
+  - shut up
+  - idiot
+  - dumb question
+  - stop complaining
+  - no one cares
+empathic_terms:
+  - i understand
+  - i'm sorry
+  - i am sorry
+  - sorry to hear
+  - that sounds
+  - must be difficult
+  - understand how
+deferral_terms:
+  - cannot diagnose
+  - can't diagnose
+  - unable to diagnose
+  - not a diagnosis
+  - only your doctor can
+  - only a doctor can
+unseen_evidence_terms:
+  - your lab
+  - your test
+  - your blood work
+  - your scan
+  - your x-ray
+  - as i mentioned
+  - as we discussed
+  - your history shows
+  - your results show
+grounding_terms:
+  - lab
+  - test
+  - result
+  - history
+  - report
+  - blood
+  - scan
+  - mentioned
+  - discussed
+  - showed
+junk_terms:
+  - chatdoctor
+  - attachment removed
+negation_terms:
+  - no
+  - not
+  - never
+  - denies
+  - deny
+  - without
+  - ruled out
+  - don
+  - doesn
+  - didn
+  - isn
+  - aren
+  - wasn
+  - weren
+nonacute_terms:
+  - had a
+  - had an
+  - history of
+  - last year
+  - last month
+  - last week
+  - years ago
+  - used to
+  - in the past
+  - almost
+  - nearly
+  - times a week
+  - times a month
+  - every day
+  - for months
+  - for years
+  - chronic
+  - one year
+  - a year
+  - past year
+  - years
+  - year
+  - diagnosed
+history_terms:
+  - months back
+  - months ago
+  - weeks back
+  - weeks ago
+  - year ago
+  - years ago
+  - turned out
+  - was normal
+  - were normal
+  - ruled out
+  - came back normal
+  - showed nothing
+  - days ago
+  - days back
+  - day ago
+  - old heart attack
+  - old stroke
+  - old mi
+  - epilepsy
+  - epileptic
+  - came back as normal
+  - came back negative
+  - negative
+  - previously
+  - possible
+  - possibly
+  - at risk
+  - risk of
+  - will die
+  - going to die
+  - have had
+  - has had
+  - always
+  - sometimes
+  - occasionally
+  - once in a while
+  - years
+  - year
+  - chance of
+  - chances of
+  - were fine
+  - was fine
+  - are fine
+  - all fine
+  - had a
+  - had an
+family_terms:
+  - mother
+  - father
+  - mom
+  - dad
+  - uncle
+  - aunt
+  - brother
+  - sister
+  - husband
+  - wife
+  - partner
+  - son
+  - daughter
+  - child
+  - friend
+educational_openers:
+  - what is
+  - what are
+  - is that
+  - is this
+  - can you explain
+  - tell me about
+  - what causes
+  - how does
+emergency_compounds:
+  - seizure medicine
+  - seizure medicines
+  - seizure medication
+  - seizure disorder
+  - stroke risk
+  - heart attack risk
+  - nose is choking
+  - nose choking
+  - nasal choking
