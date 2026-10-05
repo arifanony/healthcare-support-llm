@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+pip-freeze-*.txt
+
+# Artifacts: weights and large binaries stay out of VCS; manifests + metrics are checked in
+artifacts/*
+!artifacts/.gitkeep
+*.safetensors
+*.bin
+*.pt
+*.onnx
+
+# Data: raw + derived datasets live in the working tree but are NOT committed
+# (they are identified by manifest hashes; see README quickstart to rebuild).
+# Small provenance artifacts (manifests, reports, review samples) ARE tracked.
+data/raw/*
+data/processed/*
+data/curated/*
+data/splits/*
+data/golden/*
+data/negative/*
+!data/*/.gitkeep
+!data/*/MANIFEST.json
+!data/golden/GOLDEN_LOCK.json
+!data/processed/triage_report.json
+!data/processed/calibration_sample.json
+!data/processed/spotcheck_T4.md
+
+# Dead/alien VCS metadata + local tool state (never committed)
+.sl/
+.hg/
+.eden/
+.muse/
+.agents/
+
+# Local notes / scratch
+notebooks/.ipynb_checkpoints/
+*.tmp

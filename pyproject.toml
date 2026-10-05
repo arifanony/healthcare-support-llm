@@ -1,0 +1,9 @@
+[project]
+name = "medical-conversational-slm"
+version = "0.1.0"
+description = "Curation-to-evaluation pipeline for a conversational medical SLM experiment (research only)"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false
