@@ -1,4 +1,4 @@
-# Healthcare Support LLM
+# Healthcare Support SLM
 
 > **Research only — not for clinical use.** This repository builds a *dataset
 > curation and evaluation pipeline* for a conversational medical small-language-model
@@ -62,8 +62,8 @@ More views (system architecture, review flow, training flow, provenance):
 Prerequisites: Python 3.11 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone https://github.com/arifanony/healthcare-support-llm.git
-cd healthcare-support-llm
+git clone https://github.com/arifanony/healthcare-support-slm.git
+cd healthcare-support-slm
 uv sync
 ```
 
@@ -200,5 +200,6 @@ Live task/gate state with proof artifacts: [.genesis/](.genesis/)
   and [threat model](docs/safety/threat-model-lite.md).
 - Upstream data: Opus conversations (MIT); iCliniq (academic-research-only,
   non-commercial — respect its terms if you redistribute derived data).
-- No `LICENSE` file is set yet; add one (e.g. Apache-2.0 for code) before
-  inviting contributors.
+- Code, configs, docs, and manifests are under the [Apache License
+  2.0](LICENSE) (© 2026 arifanony). It does not lift the iCliniq
+  academic-use restriction on derived data.
