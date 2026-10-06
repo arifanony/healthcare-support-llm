@@ -1,0 +1,879 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Healthcare Support SLM — curation to training pipeline",
+    "locale": "en",
+    "output": ".archify/architecture-pipeline-20261006-174721/pipeline.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/arifanony/healthcare-support-llm.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "0c4d3e149b07e08e2af59b91fd76318d16bed2fe"
+    },
+    "views": [
+      {
+        "id": "done-so-far",
+        "label": "Done so far",
+        "focus": [
+          "spec",
+          "t2",
+          "store-raw",
+          "t3",
+          "store-conv",
+          "t4",
+          "store-atomic",
+          "t5",
+          "store-triaged"
+        ],
+        "note": "T1–T5 complete with hash-verified stores."
+      },
+      {
+        "id": "active-frontier",
+        "label": "Active frontier",
+        "focus": [
+          "store-triaged",
+          "t6",
+          "t7"
+        ],
+        "note": "T6 human review is active; T7 waits on it."
+      },
+      {
+        "id": "road-ahead",
+        "label": "Road ahead",
+        "focus": [
+          "t7",
+          "store-curated",
+          "t8",
+          "t9",
+          "store-splits",
+          "t10",
+          "store-runs",
+          "t11",
+          "t12",
+          "t13"
+        ],
+        "note": "T7–T13 queued in dependency order."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "spec",
+      "type": "backend",
+      "label": "SPEC-1 · Spec",
+      "sublabel": "approved 2026-09-30",
+      "tag": "done",
+      "icon": "success",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "SPEC.md",
+          "line": 1,
+          "label": "product spec"
+        },
+        {
+          "path": ".genesis/project.json",
+          "line": 307,
+          "end_line": 331,
+          "label": "SPEC-1 approval"
+        }
+      ]
+    },
+    {
+      "id": "raw-icliniq",
+      "type": "external",
+      "label": "iCliniq Q&A",
+      "sublabel": "7,321 · academic-only",
+      "tag": "source",
+      "icon": "none",
+      "pos": [
+        210,
+        60
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "data/raw/MANIFEST.json",
+          "label": "raw manifest"
+        },
+        {
+          "path": "data/examples/raw_icliniq_sample.json",
+          "label": "example rows"
+        }
+      ]
+    },
+    {
+      "id": "raw-opus",
+      "type": "external",
+      "label": "Opus chats",
+      "sublabel": "2,197 chats · MIT",
+      "tag": "source",
+      "icon": "none",
+      "pos": [
+        40,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "data/raw/MANIFEST.json",
+          "label": "raw manifest"
+        },
+        {
+          "path": "data/examples/raw_opus_sample.jsonl",
+          "label": "example rows"
+        }
+      ]
+    },
+    {
+      "id": "t2",
+      "type": "backend",
+      "label": "T2 · Ingest",
+      "sublabel": "write-once + manifest",
+      "tag": "done",
+      "icon": "success",
+      "pos": [
+        210,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "scripts/build_manifest.py",
+          "label": "manifest builder"
+        },
+        {
+          "path": "scripts/verify_manifest.py",
+          "label": "verify-manifest gate"
+        },
+        {
+          "path": "data/raw/MANIFEST.json",
+          "label": "raw manifest"
+        }
+      ]
+    },
+    {
+      "id": "store-raw",
+      "type": "database",
+      "label": "Raw store",
+      "sublabel": "9,518 · hash-verified",
+      "tag": "9,518 rows",
+      "icon": "neutral",
+      "pos": [
+        380,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "data/raw/MANIFEST.json",
+          "label": "hashes + counts"
+        },
+        {
+          "path": "data/examples/raw_opus_sample.jsonl",
+          "label": "opus examples"
+        },
+        {
+          "path": "data/examples/raw_icliniq_sample.json",
+          "label": "icliniq examples"
+        }
+      ]
+    },
+    {
+      "id": "t3",
+      "type": "backend",
+      "label": "T3 · Structure",
+      "sublabel": "to conversation/v1",
+      "tag": "done",
+      "icon": "success",
+      "pos": [
+        550,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "src/structuring/normalize.py",
+          "line": 1,
+          "end_line": 16,
+          "label": "normalizer contract"
+        },
+        {
+          "path": "scripts/check_structured.py",
+          "label": "check-structured gate"
+        }
+      ]
+    },
+    {
+      "id": "store-conv",
+      "type": "database",
+      "label": "Conversations",
+      "sublabel": "9,518 · 0 quarantined",
+      "tag": "9,518 rows",
+      "icon": "neutral",
+      "pos": [
+        720,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "data/processed/MANIFEST.json",
+          "label": "hashes + counts"
+        },
+        {
+          "path": "data/examples/conversations_sample.jsonl",
+          "label": "example rows"
+        }
+      ]
+    },
+    {
+      "id": "t4",
+      "type": "backend",
+      "label": "T4 · Extract",
+      "sublabel": "one task per example",
+      "tag": "done",
+      "icon": "success",
+      "pos": [
+        890,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "src/curation/extract.py",
+          "line": 87,
+          "end_line": 96,
+          "label": "example ids + spans"
+        },
+        {
+          "path": "scripts/check_atomic.py",
+          "label": "check-atomic gate"
+        }
+      ]
+    },
+    {
+      "id": "store-atomic",
+      "type": "database",
+      "label": "Atomic examples",
+      "sublabel": "37,487 parent-linked",
+      "tag": "37,487 rows",
+      "icon": "neutral",
+      "pos": [
+        1060,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "data/processed/MANIFEST.json",
+          "label": "hashes + counts"
+        },
+        {
+          "path": "data/examples/atomic_sample.jsonl",
+          "label": "example rows"
+        }
+      ]
+    },
+    {
+      "id": "t5",
+      "type": "backend",
+      "label": "T5 · Triage",
+      "sublabel": "rules-triage/v1",
+      "tag": "done",
+      "icon": "success",
+      "pos": [
+        1060,
+        440
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "src/curation/triage.py",
+          "line": 266,
+          "label": "deterministic verdict"
+        },
+        {
+          "path": "src/curation/triage.py",
+          "line": 425,
+          "end_line": 449,
+          "label": "verdict routing"
+        },
+        {
+          "path": "configs/triage.yaml",
+          "label": "triage config"
+        }
+      ]
+    },
+    {
+      "id": "store-triaged",
+      "type": "database",
+      "label": "Triaged store",
+      "sublabel": "37,487 graded",
+      "tag": "37,487 rows",
+      "icon": "neutral",
+      "pos": [
+        890,
+        440
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "data/processed/triage_report.json",
+          "label": "verdict census"
+        },
+        {
+          "path": "data/examples/triaged_sample.jsonl",
+          "label": "example rows"
+        }
+      ]
+    },
+    {
+      "id": "t6",
+      "type": "backend",
+      "label": "T6 · Review",
+      "sublabel": "ACCEPT/EDIT/REJECT",
+      "tag": "active",
+      "icon": "active",
+      "pos": [
+        720,
+        440
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": "docs/workflow/task-gate-map.md",
+          "line": 15,
+          "label": "T6 gate row"
+        },
+        {
+          "path": ".genesis/project.json",
+          "line": 696,
+          "end_line": 728,
+          "label": "T6-1 contract"
+        }
+      ]
+    },
+    {
+      "id": "t7",
+      "type": "backend",
+      "label": "T7 · Curate",
+      "sublabel": "curated + negative",
+      "tag": "queued",
+      "icon": "waiting",
+      "pos": [
+        550,
+        440
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 792,
+          "end_line": 801,
+          "label": "T7-1 contract"
+        },
+        {
+          "path": "docs/workflow/task-gate-map.md",
+          "line": 16,
+          "label": "T7 gate row"
+        }
+      ]
+    },
+    {
+      "id": "store-curated",
+      "type": "database",
+      "label": "Curated stores",
+      "sublabel": "from T6 decisions",
+      "tag": "planned",
+      "icon": "waiting",
+      "pos": [
+        380,
+        440
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 797,
+          "end_line": 801,
+          "label": "planned scope"
+        }
+      ]
+    },
+    {
+      "id": "t8",
+      "type": "security",
+      "label": "T8 · Quality",
+      "sublabel": "go / no-go report",
+      "tag": "queued",
+      "icon": "waiting",
+      "pos": [
+        210,
+        440
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 834,
+          "end_line": 843,
+          "label": "T8-1 contract"
+        },
+        {
+          "path": "docs/workflow/task-gate-map.md",
+          "line": 23,
+          "end_line": 24,
+          "label": "no-go loop-back"
+        }
+      ]
+    },
+    {
+      "id": "t9",
+      "type": "backend",
+      "label": "T9 · Splits",
+      "sublabel": "seeded · golden locked",
+      "tag": "queued",
+      "icon": "waiting",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 872,
+          "end_line": 881,
+          "label": "T9-1 contract"
+        },
+        {
+          "path": "docs/workflow/task-gate-map.md",
+          "line": 18,
+          "label": "T9 gate row"
+        }
+      ]
+    },
+    {
+      "id": "store-splits",
+      "type": "database",
+      "label": "Splits+golden",
+      "sublabel": "locked golden set",
+      "tag": "planned",
+      "icon": "waiting",
+      "pos": [
+        40,
+        600
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 877,
+          "end_line": 881,
+          "label": "planned scope"
+        }
+      ]
+    },
+    {
+      "id": "t10",
+      "type": "backend",
+      "label": "T10 · Train",
+      "sublabel": "baseline + LoRA SFT",
+      "tag": "queued",
+      "icon": "waiting",
+      "pos": [
+        210,
+        600
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 925,
+          "end_line": 934,
+          "label": "T10-1 contract"
+        },
+        {
+          "path": "docs/workflow/task-gate-map.md",
+          "line": 19,
+          "label": "T10 gate row"
+        }
+      ]
+    },
+    {
+      "id": "store-runs",
+      "type": "database",
+      "label": "Runs+adapters",
+      "sublabel": "runs + adapters",
+      "tag": "planned",
+      "icon": "waiting",
+      "pos": [
+        380,
+        600
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 930,
+          "end_line": 934,
+          "label": "planned scope"
+        }
+      ]
+    },
+    {
+      "id": "t11",
+      "type": "backend",
+      "label": "T11 · Compare",
+      "sublabel": "same-golden compare",
+      "tag": "queued",
+      "icon": "waiting",
+      "pos": [
+        550,
+        600
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 975,
+          "end_line": 983,
+          "label": "T11-1 contract"
+        }
+      ]
+    },
+    {
+      "id": "t12",
+      "type": "backend",
+      "label": "T12 · Analyze",
+      "sublabel": "clusters + proposal",
+      "tag": "queued",
+      "icon": "waiting",
+      "pos": [
+        720,
+        600
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 1016,
+          "end_line": 1024,
+          "label": "T12-1 contract"
+        }
+      ]
+    },
+    {
+      "id": "t13",
+      "type": "backend",
+      "label": "T13 · Repro",
+      "sublabel": "repro from specs+hash",
+      "tag": "queued",
+      "icon": "waiting",
+      "pos": [
+        890,
+        600
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "sources": [
+        {
+          "path": ".genesis/project.json",
+          "line": 1055,
+          "end_line": 1061,
+          "label": "T13-1 contract"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "f-opus-ingest",
+      "from": "raw-opus",
+      "to": "t2",
+      "label": "2,197 chats",
+      "variant": "emphasis",
+      "labelDy": -50
+    },
+    {
+      "id": "f-icliniq-ingest",
+      "from": "raw-icliniq",
+      "to": "t2",
+      "label": "7,321 rows",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-spec-ingest",
+      "from": "spec",
+      "to": "t2",
+      "label": "requirements",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-ingest-rawstore",
+      "from": "t2",
+      "to": "store-raw",
+      "label": "9,518 verified",
+      "variant": "emphasis",
+      "labelDy": -50
+    },
+    {
+      "id": "f-rawstore-structure",
+      "from": "store-raw",
+      "to": "t3",
+      "label": "raw chats",
+      "variant": "emphasis",
+      "labelDy": -50
+    },
+    {
+      "id": "f-structure-conv",
+      "from": "t3",
+      "to": "store-conv",
+      "label": "9,518 normalized",
+      "variant": "emphasis",
+      "labelDy": -50
+    },
+    {
+      "id": "f-conv-extract",
+      "from": "store-conv",
+      "to": "t4",
+      "label": "turns + spans",
+      "variant": "emphasis",
+      "labelDy": -50
+    },
+    {
+      "id": "f-extract-atomic",
+      "from": "t4",
+      "to": "store-atomic",
+      "label": "37,487 examples",
+      "variant": "emphasis",
+      "labelDy": -50
+    },
+    {
+      "id": "f-atomic-triage",
+      "from": "store-atomic",
+      "to": "t5",
+      "label": "ungraded",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-triage-graded",
+      "from": "t5",
+      "to": "store-triaged",
+      "label": "18,096 / 19,383 / 8",
+      "variant": "emphasis",
+      "labelDy": 55
+    },
+    {
+      "id": "f-graded-review",
+      "from": "store-triaged",
+      "to": "t6",
+      "label": "19,383 to review",
+      "variant": "emphasis",
+      "labelDy": 55
+    },
+    {
+      "id": "f-review-curated",
+      "from": "t6",
+      "to": "t7",
+      "label": "human decisions",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-curated-store",
+      "from": "t7",
+      "to": "store-curated",
+      "label": "curated + negative",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-store-quality",
+      "from": "store-curated",
+      "to": "t8",
+      "label": "candidate dataset",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-quality-splits",
+      "from": "t8",
+      "to": "t9",
+      "label": "go decision",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-splits-store",
+      "from": "t9",
+      "to": "store-splits",
+      "label": "splits + golden",
+      "variant": "dashed",
+      "labelDy": 45
+    },
+    {
+      "id": "f-store-train",
+      "from": "store-splits",
+      "to": "t10",
+      "label": "train + golden",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-train-runs",
+      "from": "t10",
+      "to": "store-runs",
+      "label": "adapter + metrics",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-runs-compare",
+      "from": "store-runs",
+      "to": "t11",
+      "label": "run outputs",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-compare-analyze",
+      "from": "t11",
+      "to": "t12",
+      "label": "comparison report",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-analyze-repro",
+      "from": "t12",
+      "to": "t13",
+      "label": "iteration proposal",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "id": "f-nogo-rework",
+      "from": "t8",
+      "to": "t6",
+      "label": "no-go rework",
+      "variant": "security",
+      "fromSide": "left",
+      "toSide": "top",
+      "via": [
+        [
+          190,
+          470
+        ],
+        [
+          190,
+          390
+        ],
+        [
+          785,
+          390
+        ]
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Reading the status",
+      "items": [
+        "Node icon + tag mirror the Genesis task state: success/done, active, waiting/queued.",
+        "Bold edges carry data that already flows; dashed edges are planned.",
+        "The red edge is the documented no-go loop: T8 can send T6/T4 back to active."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Freshness",
+      "items": [
+        "Snapshot of .genesis/project.json at 0c4d3e1 (2026-10-06).",
+        "Regenerate after any gate or checkpoint: node scripts/refresh_diagram.mjs."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidence",
+      "items": [
+        "Every node links its sources on GitHub at the pinned revision.",
+        "Stores show live row counts from their manifests.",
+        "Raw datasets are external inputs; everything else lives in the local repository (trust boundary)."
+      ]
+    }
+  ]
+}

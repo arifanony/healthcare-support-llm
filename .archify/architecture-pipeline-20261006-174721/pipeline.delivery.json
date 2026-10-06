@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "d0937786-d186-497e-865e-4737c02e40ae",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "D:\\SLM\\.archify\\architecture-pipeline-20261006-174721\\candidate.json",
+  "output": "D:\\SLM\\.archify\\architecture-pipeline-20261006-174721\\pipeline.html",
+  "specification": {
+    "sha256": "0b74ab060a994c1ca6202dfe1b90b85438e28f6292edd0e0da50a95374129e05",
+    "bytes": 18268
+  },
+  "artifact": {
+    "sha256": "fbfbdbf19a53a981fb43178ae8cfaeb5bd4123976aa9e06d5e61d41852a3b965",
+    "bytes": 801660
+  }
+}
