@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From raw chats to training data — a tour of data/processed</title>
+<style>
+:root{--ink:#1a1d21;--mut:#3d434b;--line:#e3e7eb;--teal:#0f766e;--tealbg:#e6f2f0;--code:#101418;--ok:#137333;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fef3c7;--bad:#b42318;--badbg:#fee4e2}
+*{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:#fff;margin:0;line-height:1.6}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+header.top{padding:30px 0 20px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--teal);font-weight:700;font-size:13px;letter-spacing:.05em}
+h1{font-size:33px;margin:6px 0 8px;letter-spacing:-.01em;line-height:1.2}
+.sub{color:var(--mut);font-size:16px;max-width:62ch;margin:0 0 4px}
+ol.pipe{list-style:none;display:flex;gap:8px;flex-wrap:wrap;padding:18px 0 4px;margin:0}
+ol.pipe a{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:5px 14px 5px 6px;font-size:13.5px}
+ol.pipe a:hover{border-color:var(--teal)}
+ol.pipe b{background:var(--teal);color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px}
+section{padding:28px 0;border-bottom:1px solid var(--line)}
+.sec-head{display:flex;gap:12px;align-items:baseline;margin-bottom:6px}
+.sec-num{font-size:12.5px;font-weight:800;color:#fff;background:var(--teal);border-radius:6px;padding:2px 9px;white-space:nowrap}
+h2{font-size:21px;margin:0}
+h3{font-size:16px;margin:22px 0 6px}
+p{margin:8px 0}
+.fileline{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f1f4f6;padding:10px 14px;border-radius:8px;font-size:13px;margin:12px 0}
+.fileline b{color:var(--teal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}
+.grid2 h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:2px}
+.tabs{display:flex;gap:8px;margin:14px 0 10px}
+.tab{border:1px solid #cfd6dd;background:#fff;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:14px}
+.tab[aria-selected="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
+.bubble{padding:10px 14px;border-radius:4px 16px 16px 16px;background:#f1f4f6;margin:10px 0;max-width:88%}
+.bubble.doctor{background:var(--tealbg);border-radius:16px 16px 4px 16px;margin-left:auto}
+.bubble .who{font-size:12px;font-weight:700;color:var(--mut);display:block;margin-bottom:2px}
+.bubble p{margin:0;font-size:14.5px}
+pre{background:var(--code);color:#e6edf3;padding:14px 16px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.55}
+details{margin:10px 0}
+summary{cursor:pointer;font-size:14px;color:var(--teal);font-weight:600}
+.counts{display:flex;gap:26px;flex-wrap:wrap;margin:12px 0}
+.count b{font-size:27px;display:block;line-height:1.1}
+.count span{font-size:13px;color:var(--mut)}
+.splitbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:12px 0 4px}
+.splitbar i{display:block;height:100%}
+.legend{font-size:13px;color:var(--mut);margin:0 0 6px}
+.ex{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+.ex .ids{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--mut);margin-bottom:8px}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 11px;border-radius:20px}
+.b-accept{background:var(--okbg);color:var(--ok)}
+.b-review{background:var(--warnbg);color:var(--warn)}
+.b-reject{background:var(--badbg);color:var(--bad)}
+.b-action{background:#eef1f4;color:var(--mut)}
+.fld{margin:8px 0;font-size:14.5px}
+.fld>span{display:block;font-size:12px;font-weight:700;color:var(--mut)}
+.verdict-btns{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+.verdict-btn{border:2px solid #cfd6dd;background:#fff;border-radius:8px;padding:8px 18px;cursor:pointer;font-size:14px;font-weight:700}
+.verdict-btn[data-verdict="ACCEPT"][aria-selected="true"]{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+.verdict-btn[data-verdict="REVIEW"][aria-selected="true"]{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.verdict-btn[data-verdict="REJECT"][aria-selected="true"]{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+.dim{display:grid;grid-template-columns:215px 1fr 26px;gap:10px;align-items:center;font-size:13px;margin:5px 0}
+.dim b{text-align:right}
+.bar{height:9px;background:#e8ecef;border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--teal);border-radius:5px;transition:width .35s ease}
+.bar.mid i{background:#d97706}
+.bar.low i{background:var(--bad)}
+.rationale{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:#f1f4f6;border-radius:6px;padding:8px 12px;margin:10px 0}
+.note{font-size:13.5px;color:var(--mut)}
+.flaglist{font-size:14px;margin:6px 0}
+.flaglist li{margin:3px 0}
+.quiz-q{margin:18px 0}
+.quiz-q p{font-weight:600}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1px solid #cfd6dd;border-radius:8px;background:#fff;cursor:pointer;font-size:14.5px}
+.opt:hover:not(:disabled){border-color:var(--teal)}
+.opt.correct{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default;color:var(--ink)}
+.explain{font-size:14px;color:var(--mut);min-height:1.4em}
+#quiz-score{font-weight:700;font-size:16px}
+footer{padding:26px 0 46px;color:var(--mut);font-size:14px}
+code.inline{font-family:ui-monospace,Consolas,monospace;font-size:.88em;background:#f1f4f6;padding:1px 6px;border-radius:4px}
+@media (max-width:640px){h1{font-size:26px}.grid2{grid-template-columns:1fr}.dim{grid-template-columns:140px 1fr 24px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="wrap">
+<div class="kicker">HEALTHCARE SUPPORT SLM &middot; INTERACTIVE TOUR</div>
+<h1>From raw chats to training data</h1>
+<p class="sub">Everything in <code class="inline">data/processed/</code>, explained with real rows from the pipeline &mdash; what each file is, why it exists, and how the stages connect. All examples below are genuine records, truncated for display.</p>
+<ol class="pipe">
+<li><a href="#s-map"><b>0</b>Big picture</a></li>
+<li><a href="#s-conv"><b>1</b>conversations</a></li>
+<li><a href="#s-quar"><b>2</b>quarantine</a></li>
+<li><a href="#s-atomic"><b>3</b>atomic</a></li>
+<li><a href="#s-tri"><b>4</b>triaged</a></li>
+<li><a href="#s-qa"><b>5</b>QA sidecars</a></li>
+<li><a href="#s-quiz"><b>6</b>Quiz</a></li>
+</ol>
+</div>
+</header>
+<main class="wrap">
+<section id="s-map">
+<div class="sec-head"><span class="sec-num">0</span><h2>The big picture</h2></div>
+<p>Raw doctor-patient chats arrive in two different shapes. The pipeline normalizes them (T3), explodes each chat into single-task training examples (T4), then pre-grades every example for quality and safety (T5) so human reviewers in T6 spend their time where it matters.</p>
+<div class="counts">
+<div class="count"><b>9,518</b><span>conversations in<br>(7,321 iCliniq + 2,197 Opus)</span></div>
+<div class="count"><b>37,487</b><span>atomic examples out<br>(&asymp;3.9 per conversation)</span></div>
+<div class="count"><b>0</b><span>quarantined<br>(100% passed validation)</span></div>
+</div>
+<h3>Where the 37,487 examples landed after triage</h3>
+<div class="splitbar" aria-hidden="true"><i style="width:48.27%;background:#137333"></i><i style="width:51.71%;background:#d97706"></i><i style="width:2px;background:#b42318"></i></div>
+<p class="legend"><b style="color:#137333">18,096 ACCEPT</b> &middot; <b style="color:#9a6700">19,383 REVIEW</b> &middot; <b style="color:#b42318">8 REJECT</b> (the red sliver is 0.02% &mdash; real, just tiny)</p>
+<p class="note">Rule of thumb for the whole store: every row carries its lineage (<code class="inline">conversation_id</code>, <code class="inline">source_id</code>, <code class="inline">history[]</code>), so any training example can be traced back to the exact raw chat it came from.</p>
+</section>
+
+<section id="s-conv">
+<div class="sec-head"><span class="sec-num">1</span><h2>conversations.jsonl &mdash; one schema for two sources</h2></div>
+<div class="fileline"><b>conversations.jsonl</b> &middot; 41.7 MB &middot; 9,518 rows &middot; producer: T3 <code class="inline">structuring/normalize.py</code></div>
+<div class="grid2">
+<div><h3>What</h3><p>Each raw chat becomes one record: an id, a source tag, the turns rewritten as clean <code class="inline">patient</code>/<code class="inline">doctor</code> roles, plus <code class="inline">meta</code> and a <code class="inline">history</code> log of what T3 did.</p></div>
+<div><h3>Why</h3><p>The two sources look nothing alike &mdash; Opus rows are ChatML with system turns and disease tags, iCliniq rows are forum Q&amp;A. Every downstream script would need two code paths without this step. Normalizing once means everything after T3 speaks one dialect.</p></div>
+</div>
+<h3>A real record: acne consultation, 26 turns (showing first 2)</h3>
+<div class="tabs" role="tablist">
+<button class="tab" id="tab-read" aria-selected="true">Readable</button>
+<button class="tab" id="tab-json" aria-selected="false">Raw JSON</button>
+</div>
+<div id="conv-read"></div>
+<div id="conv-json-wrap" style="display:none"><pre id="conv-json"></pre></div>
+<p class="note">Notice the <code class="inline">history</code> entry: <i>&ldquo;opus chatml; dropped 1 system turns; disease=Acne icd10=L70.0&rdquo;</i> &mdash; the normalize step narrates exactly what it changed, on the row itself.</p>
+</section>
+
+<section id="s-quar">
+<div class="sec-head"><span class="sec-num">2</span><h2>quarantine.jsonl &mdash; the reject bin (empty on purpose)</h2></div>
+<div class="fileline"><b>quarantine.jsonl</b> &middot; 0 bytes &middot; 0 rows &middot; producer: T3</div>
+<div class="grid2">
+<div><h3>What</h3><p>Conversations that fail validation go here instead of silently vanishing. Right now it is empty: all 9,518 chats passed.</p></div>
+<div><h3>Why keep an empty file?</h3><p>Empty is a result, not an omission. The gate script hashes this file on every run (its SHA-256 is the well-known hash of an empty file), and the manifest asserts <code class="inline">rows: 0</code>. If a future data drop breaks parsing, failures land here visibly instead of corrupting the good store.</p></div>
+</div>
+</section>
+
+<section id="s-atomic">
+<div class="sec-head"><span class="sec-num">3</span><h2>atomic.jsonl &mdash; chats exploded into single tasks</h2></div>
+<div class="fileline"><b>atomic.jsonl</b> &middot; 240.6 MB &middot; 37,487 rows &middot; producer: T4 <code class="inline">curation/extract.py</code></div>
+<div class="grid2">
+<div><h3>What</h3><p>Each conversation is split into <b>atomic examples</b>: one <code class="inline">context</code> + one <code class="inline">user_message</code> + one <code class="inline">response</code>, with an <code class="inline">action</code> label naming the task (<code class="inline">answer</code>, <code class="inline">advise_professional_evaluation</code>, &hellip;). Metadata starts life as <code class="inline">triage: null</code> &mdash; grading comes later.</p></div>
+<div><h3>Why</h3><p>Models train on single tasks, not 26-turn sagas. One chat mixes greetings, history-taking, diagnosis, and prescriptions &mdash; grading or training on the whole blob would smear quality signals. Splitting gives 37,487 clean, independently gradable units, each still parent-linked via <code class="inline">conversation_id</code>.</p></div>
+</div>
+<h3>Two children of the acne conversation above</h3>
+<div id="atomic-list"></div>
+<p class="note">See how the second example packs earlier turns into <code class="inline">context</code>? That keeps each example self-contained: a reviewer (or model) never needs to open the parent chat to understand it.</p>
+</section>
+<section id="s-tri">
+<div class="sec-head"><span class="sec-num">4</span><h2>triaged.jsonl &mdash; every example pre-graded</h2></div>
+<div class="fileline"><b>triaged.jsonl</b> &middot; 265.9 MB &middot; 37,487 rows &middot; producer: T5 <code class="inline">curation/triage.py</code> (rules <code class="inline">rules-triage/v1</code>)</div>
+<div class="grid2">
+<div><h3>What</h3><p>Same 37,487 rows as <code class="inline">atomic.jsonl</code>, except <code class="inline">metadata.triage</code> is now filled: a verdict, eleven 1&ndash;5 quality-dimension scores, a rule trace, and the grader version. Nothing else changes &mdash; the gate verifies that.</p></div>
+<div><h3>Why</h3><p>37,487 rows is far more than humans can read. Deterministic rules pre-sort the pile: clean rows pass, suspicious rows queue for T6 human review, dangerous rows are rejected outright. Rules &mdash; not an LLM &mdash; because the harness demands byte-identical re-runs, and there is no network in the build sandbox.</p></div>
+</div>
+<h3>Verdict explorer: one genuine example of each</h3>
+<p class="note">The routing rule is strict on purpose: <b>any dimension &le; 2 &rarr; REVIEW</b>, dangerous patterns &rarr; REJECT. Click to inspect.</p>
+<div class="verdict-btns">
+<button class="verdict-btn" data-verdict="ACCEPT" aria-selected="true">ACCEPT &middot; 18,096</button>
+<button class="verdict-btn" data-verdict="REVIEW" aria-selected="false">REVIEW &middot; 19,383</button>
+<button class="verdict-btn" data-verdict="REJECT" aria-selected="false">REJECT &middot; 8</button>
+</div>
+<div class="ex">
+<div class="ids" id="verdict-ids"></div>
+<p><span class="badge" id="verdict-badge"></span> <span class="badge b-action" id="verdict-action"></span></p>
+<div class="fld"><span>Patient</span><p id="verdict-user" style="margin:0"></p></div>
+<div class="fld"><span>Doctor</span><p id="verdict-resp" style="margin:0"></p></div>
+<div class="rationale" id="verdict-rationale"></div>
+<p id="verdict-why"></p>
+<h3>Dimension scores (1&ndash;5)</h3>
+<div id="verdict-dims"></div>
+</div>
+<p class="note">The <code class="inline">rationale</code> is a trace of which rules fired (<i>recall=0.04</i>, <i>emergency-mishandled</i>, &hellip;), not a sentence &mdash; it tells the T6 reviewer exactly why the row landed here.</p>
+</section>
+
+<section id="s-qa">
+<div class="sec-head"><span class="sec-num">5</span><h2>The QA sidecars &mdash; trust, but verify</h2></div>
+<p>Four small files keep the three big ones honest. Each answers one question a learner (or auditor) should ask.</p>
+<h3>triage_report.json &mdash; &ldquo;how did grading go overall?&rdquo;</h3>
+<div class="fileline"><b>triage_report.json</b> &middot; 313 rows &middot; verdict counts, per-dimension means, flag census, calibration agreement</div>
+<p id="report-meta"></p>
+<ul class="flaglist" id="report-flags"></ul>
+<p id="report-agree"></p>
+<h3>calibration_sample.json &mdash; &ldquo;who grades the grader?&rdquo;</h3>
+<div class="fileline"><b>calibration_sample.json</b> &middot; 100 records &middot; fixed random sample, seed 42</div>
+<p id="cal-purpose"></p>
+<div class="ex"><div class="ids" id="cal-ids"></div><div id="cal-fields"></div></div>
+<p class="note">The sample ships with <code class="inline">human_verdict: null</code> on every record &mdash; filling those in (blind, without peeking at the triage verdicts) is the human calibration task. An agent stand-in graded them first: 54/100 agreement.</p>
+<h3>spotcheck_T4.md &mdash; &ldquo;did a human actually read any of this?&rdquo;</h3>
+<div class="fileline"><b>spotcheck_T4.md</b> &middot; 50 readable excerpts (25 Opus + 25 iCliniq) &middot; pass bar: fewer than 5 errors &middot; result: passed</div>
+<div class="ex">
+<div class="ids">sample entry &middot; icliniq:6601 &middot; advise_professional_evaluation</div>
+<div class="bubble"><span class="who">PATIENT</span><p>Hello doctor, I have had a sore throat on and off, for the past few weeks. It is not severe, but more of an annoyance with some referred ear pain. This week, I had a family member, who is a nurse, look at my throat&hellip;</p></div>
+<div class="bubble doctor"><span class="who">DOCTOR</span><p>Hello, Welcome to Chat Doctor forum. You seem to be having some mild inflammation of the sinuses and nasal cavities. The same instead of causing headache or nose block is causing post-nasal&hellip; Let me suggest some medicines that I would do in my practice&hellip;</p></div>
+</div>
+<h3>MANIFEST.json &mdash; &ldquo;prove this build is reproducible&rdquo;</h3>
+<div class="fileline"><b>MANIFEST.json</b> &middot; SHA-256 + row count per file &middot; the seal on the whole store</div>
+<pre id="manifest-pre"></pre>
+<p class="note">Every gate script re-hashes every file and compares. Same inputs + same code = same hashes, or the build fails. (SHA-256 values shortened here; the real file carries all 64 characters.)</p>
+</section>
+
+<section id="s-quiz">
+<div class="sec-head"><span class="sec-num">6</span><h2>Check yourself</h2></div>
+<div class="quiz-q" id="q1">
+<p>1. A conversation has 26 turns. Why not train on the whole thing?</p>
+<button class="opt" onclick="answerQuiz('q1',0,this)">A. Whole chats are too big to store</button>
+<button class="opt" onclick="answerQuiz('q1',1,this)">B. Training needs single-task examples &mdash; one context + request + response each</button>
+<button class="opt" onclick="answerQuiz('q1',2,this)">C. JSONL rows cannot hold long text</button>
+<p class="explain" id="q1-fb"></p>
+</div>
+<div class="quiz-q" id="q2">
+<p>2. A triage row scores safety 4 but relevance 2. What is the verdict?</p>
+<button class="opt" onclick="answerQuiz('q2',0,this)">A. ACCEPT &mdash; safety is what matters</button>
+<button class="opt" onclick="answerQuiz('q2',1,this)">B. REVIEW &mdash; any dimension &le; 2 needs human eyes</button>
+<button class="opt" onclick="answerQuiz('q2',2,this)">C. REJECT outright</button>
+<p class="explain" id="q2-fb"></p>
+</div>
+<div class="quiz-q" id="q3">
+<p>3. quarantine.jsonl is empty. Why keep it?</p>
+<button class="opt" onclick="answerQuiz('q3',0,this)">A. It is a mistake &mdash; delete it</button>
+<button class="opt" onclick="answerQuiz('q3',1,this)">B. Empty is a verified result, and gates check its hash every run</button>
+<button class="opt" onclick="answerQuiz('q3',2,this)">C. T6 will fill it in later</button>
+<p class="explain" id="q3-fb"></p>
+</div>
+<div class="quiz-q" id="q4">
+<p>4. What does MANIFEST.json actually prove?</p>
+<button class="opt" onclick="answerQuiz('q4',0,this)">A. The data is medically correct</button>
+<button class="opt" onclick="answerQuiz('q4',1,this)">B. The files are byte-identical to a verified build</button>
+<button class="opt" onclick="answerQuiz('q4',2,this)">C. The data is cleared for commercial use</button>
+<p class="explain" id="q4-fb"></p>
+</div>
+<p id="quiz-score">Score: 0/4 (0 answered)</p>
+</section>
+</main>
+<footer><div class="wrap">
+<p>Regenerate everything on this page from scratch: download the two raw datasets, then run <code class="inline">python scripts/verify_manifest.py</code> &rarr; <code class="inline">structuring/normalize.py</code> &rarr; <code class="inline">curation/extract.py</code> &rarr; <code class="inline">python -m curation.triage</code>. The big <code class="inline">*.jsonl</code> files are too large for git (and iCliniq is academic-only), so the repo keeps the code, configs, manifests, and these QA sidecars &mdash; the data itself is rebuilt, never downloaded from GitHub.</p>
+</div></footer>
+<script type="application/json" id="data-conversation">
+{"schema_version":"conversation/v1","conversation_id":"c-0b129bdd967f7c8c","source_id":"opus:Acne:0","turns":[{"role":"patient","text":"Hi Dr. Bauer. I'm Jasmine. My skin has just gotten really bad over the last six months. I've had breakouts since I was about sixteen, but now I'm getting these deep painful bumps along my jaw and cheeks, and some of them leave dark marks and even little pitted scars. It's honestly affecting my confi…"},{"role":"doctor","text":"Thank you for coming in, Ms. Okafor-Williams, and for being candid about how this is affecting you. The psychosocial burden of acne is real and clinically significant, so we will treat it seriously. Let me first record your vitals and then take a careful history. Your vitals today: **BP 118/74 mmHg,…"}],"meta":{"source_rows":1,"quarantined":false,"quarantine_reason":null},"history":[{"stage":"T3","action":"normalize","actor":"script:structuring/normalize.py","timestamp":"2026-09-30T07:53:03.954546+00:00","detail":"opus chatml; dropped 1 system turns; disease=Acne icd10=L70.0"}]}
+</script>
+<script type="application/json" id="data-atomic">
+[{"schema_version":"atomic/v1","example_id":"e-ccff8fa975e8dea4","conversation_id":"c-0b129bdd967f7c8c","source_id":"opus:Acne:0","context":"","user_message":"Hi Dr. Bauer. I'm Jasmine. My skin has just gotten really bad over the last six months. I've had breakouts since I was about sixteen, but now I'm getting these deep painful bumps along my jaw and cheeks, and some of them leave dark marks and even little pitted scars. It's honestly affecting my confi…","action":"answer","response":"Thank you for coming in, Ms. Okafor-Williams, and for being candid about how this is affecting you. The psychosocial burden of acne is real and clinically significant, so we will treat it seriously. Let me first record your vitals and then take a careful history. Your vitals today: **BP 118/74 mmHg,…","metadata":{"quality":"unreviewed","review_status":"pending","reviewer":null,"reviewed_at":null,"triage":null,"safety_flags":[],"negative_reason":null},"history":[{"stage":"T4","action":"extract","actor":"script:curation/extract.py","timestamp":"2026-09-30T07:53:03.954546+00:00","detail":"span=0 rule=default"}]},{"schema_version":"atomic/v1","example_id":"e-5d50ac05a9085916","conversation_id":"c-0b129bdd967f7c8c","source_id":"opus:Acne:0","context":"patient: Hi Dr. Bauer. I'm Jasmine. My skin has just gotten really bad over the last six months. I've had breakouts since I was about sixteen, but now I'm getting these deep painful bumps along my jaw and cheeks, and some of them leave dark marks and even little pitted scars. It's honestly affecting…","user_message":"The worst ones are along my jawline, chin, and lower cheeks. They're deep and sore, almost like they're under the skin. I definitely break out more the week before my period. The dark marks left behind are a big issue too. My grandmother says it's just because I eat too much chocolate, but I'm not s…","action":"answer","response":"Your observations are diagnostically useful. A jawline and lower-face distribution that flares premenstrually suggests a hormonal component, which is common in adult women with acne. Regarding chocolate: the evidence does not support a strong causal link with most foods, though some data implicate h…","metadata":{"quality":"unreviewed","review_status":"pending","reviewer":null,"reviewed_at":null,"triage":null,"safety_flags":[],"negative_reason":null},"history":[{"stage":"T4","action":"extract","actor":"script:curation/extract.py","timestamp":"2026-09-30T07:53:03.954546+00:00","Detail":"span=2 rule=default"}]}]
+</script>
+<script type="application/json" id="data-triaged">
+{"ACCEPT":{"example_id":"e-ccff8fa975e8dea4","conversation_id":"c-0b129bdd967f7c8c","source_id":"opus:Acne:0","action":"answer","user_message":"Hi Dr. Bauer. I'm Jasmine. My skin has just gotten really bad over the last six months. I've had breakouts since I was about sixteen, but now I'm getting these deep painful bumps along my jaw and cheeks, and some of them leave dark marks and even little pitted scars. It's honestly affecting my confi…","response":"Thank you for coming in, Ms. Okafor-Williams, and for being candid about how this is affecting you. The psychosocial burden of acne is real and clinically significant, so we will treat it seriously. Let me first record your vitals and then take a careful history. Your vitals today: **BP 118/74 mmHg,…","triage":{"verdict":"ACCEPT","dimensions":{"relevance":3,"response_quality":4,"medical_plausibility":3,"safety":4,"unsupported_claims":3,"hallucination":4,"diagnostic_overreach":4,"missing_critical_context":4,"conversational_appropriateness":4,"empathy_tone":4,"instruction_adherence":4},"rationale":"percent-figures; lowest: medical_plausibility=3; lowest: relevance=3","prompt_version":"triage/v1","model":"rules-triage/v1","created_at":"2026-09-30T07:53:03.954546+00:00"}},"REVIEW":{"example_id":"e-fd90638293b4437a","conversation_id":"c-0b129bdd967f7c8c","source_id":"opus:Acne:0","action":"answer","user_message":"I've used a few drugstore face washes with salicylic acid and some benzoyl peroxide spot treatments. They helped the small bumps a little but did nothing for the deep painful ones. I haven't taken any pills for it. I'm not on any other medications and I don't take any vitamins or supplements.","response":"Thank you. Given the nodular lesions, the early scarring, and the premenstrual pattern, topical therapy alone will be insufficient. Let me explain a stepwise plan and the rationale. First, for the comedonal and inflammatory component, I want to start a topical retinoid. I will prescribe **adapalene …","triage":{"verdict":"REVIEW","dimensions":{"relevance":2,"response_quality":4,"medical_plausibility":3,"safety":4,"unsupported_claims":3,"hallucination":4,"diagnostic_overreach":4,"missing_critical_context":4,"conversational_appropriateness":4,"empathy_tone":4,"instruction_adherence":4},"rationale":"recall=0.04; percent-figures; lowest: relevance=2; lowest: medical_plausibility=3","prompt_version":"triage/v1","model":"rules-triage/v1","created_at":"2026-09-30T07:53:03.954546+00:00"}},"REJECT":{"example_id":"e-8b55b1bdbcc61d00","conversation_id":"c-21dc99b809ee4978","source_id":"icliniq:32","action":"advise_professional_evaluation","user_message":"Hello doctor,I am a 23-year-old female. I am 70 kg, 5\\\\3\\\" feet.I am currently experiencing shortness of breath, it started a week ago and never went away even though I am taking lagundi or herbal cough medicine 500 mg three times a day after meal.I also feel like I have a lot of phlegm that I cannot …","response":"Hello. I understand your concern. I do not think it is Covid-19 as you do not have a fever. But you need an antibiotic I believe, it may just be pneumonia. Are you taking any antipyretic  ChatDoctor.  For Covid-19 you should have a fever, cough, and difficulty in breathing.","triage":{"verdict":"REJECT","dimensions":{"relevance":3,"response_quality":3,"medical_plausibility":3,"safety":1,"unsupported_claims":4,"hallucination":4,"diagnostic_overreach":4,"missing_critical_context":1,"conversational_appropriateness":4,"empathy_tone":5,"instruction_adherence":4},"rationale":"[unsafe_response,missing_important_context] template-junk; emergency-mishandled","prompt_version":"triage/v1","model":"rules-triage/v1","created_at":"2026-09-30T07:53:03.954546+00:00"}}}
+</script>
+<script type="application/json" id="data-report">
+{"model":"rules-triage/v1","n":37487,"verdict_counts":{"ACCEPT":18096,"REVIEW":19383,"REJECT":8},"safety_flag_census":{"dosage_mentioned":9635,"diagnosis_stated":7525,"unvalidated_claim":7183,"emergency_signs_present":871,"treatment_recommended":458,"pii_present":389},"reject_code_census":{"unsafe_response":8,"missing_important_context":8},"agreement":{"grader":"agent","n_graded":100,"agree":54,"rate":0.54},"sample":{"seed":42,"n":100}}
+</script>
+<script type="application/json" id="data-calibration">
+{"purpose":"AC-T5-2 blind calibration: grade each record ACCEPT, REVIEW, or REJECT without consulting triaged.jsonl, then rebuild (triage build fills the agreement section).","seed":42,"instructions":"Set human_verdict per record (optionally human_note). 100 rows, verdict strata preserved. Do not reorder, add, or remove records.","record0":{"example_id":"e-02cfc74080e5f130","action":"answer","context":"patient: Hi Doctor, thanks for seeing me. I've had this awful itchy rash in my groin folds for about three weeks now. It's driving me crazy, especially after I teach. I'm a spin and bootcamp instructor so I'm in tight leggings sweating most of the day. It started as a small red patch on the right cr…","user_message":"Got it. What about that ketoconazole shampoo my sister had, or a pill? Wouldn't a pill be faster and easier than creams twice a day?","response":"Topical therapy is first-line and sufficient for the great majority of tinea cruris, and I prefer to avoid systemic agents when a localized infection will respond to creams. **Ketoconazole 2% (Nizoral)** is a reasonable topical azole option and the shampoo formulation can be used as a wash, but the …","human_verdict":null,"human_note":"","agent_verdict":"ACCEPT","agent_note":""},"n_records":100}
+</script>
+<script type="application/json" id="data-manifest">
+{"_note":"SHA-256 shortened to 12 chars for display; row counts exact","store":"processed","files":[{"path":"conversations.jsonl","rows":9518,"sha256":"daaff4c9cbfe…"},{"path":"quarantine.jsonl","rows":0,"sha256":"e3b0c44298fc… (hash of an empty file)"},{"path":"atomic.jsonl","rows":37487,"sha256":"d3a7cfa1d8c7…"},{"path":"triaged.jsonl","rows":37487,"sha256":"c58079b06075…"},{"path":"triage_report.json","rows":313,"sha256":"5b888028caeb…"}]}
+</script>
+<script id="app">
+var DATA = {};
+function $(id){return document.getElementById(id);}
+function fmt(n){return n.toLocaleString('en-US');}
+function el(tag,text,cls){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+var DIMS=[['relevance','Relevance'],['response_quality','Response quality'],['medical_plausibility','Medical plausibility'],['safety','Safety'],['unsupported_claims','Unsupported claims'],['hallucination','Hallucination check'],['diagnostic_overreach','Diagnostic overreach'],['missing_critical_context','Missing critical context'],['conversational_appropriateness','Conversational fit'],['empathy_tone','Empathy and tone'],['instruction_adherence','Instruction adherence']];
+var EXPLAIN={
+ACCEPT:'Why ACCEPT? Every dimension scored 3 or higher, so no rule fired. The trace names the closest calls (medical_plausibility and relevance at 3) so a reviewer can still see where it was weakest.',
+REVIEW:'Why REVIEW? Relevance scored 2: the response shares almost no words with the patient message (recall=0.04), so the rules cannot confirm it actually answers the question. One weak dimension is enough to demand human eyes in T6 — the reply may be perfectly fine; a person decides.',
+REJECT:'Why REJECT? Two dimensions hit rock bottom: safety=1 and missing_critical_context=1. Breathlessness was waved away (no fever, so "not Covid"), an antibiotic was floated over chat, and no urgency or red-flag guidance was given. Only 8 of 37,487 rows land here, and each was hand-audited.'};
+var QUIZ={
+q1:{correct:1,explain:'Each training example must be one self-contained task: context + request + response. T4 explodes every chat into ~3.9 examples on average.'},
+q2:{correct:1,explain:'The routing rule is deliberately strict: a single weak dimension is enough to queue a row for human review in T6.'},
+q3:{correct:1,explain:'The gate script asserts its hash — the SHA-256 of an empty file — on every run. If parsing ever breaks, failures land here visibly.'},
+q4:{correct:1,explain:'Hashes prove integrity and reproducibility: same inputs + same code = same bytes. They say nothing about medical truth or licensing.'}};
+var scoreState={n:0,done:{}};
+function withNote(note,obj){var c={'_display_note':note};for(var k in obj)c[k]=obj[k];return c;}
+function renderConversation(){
+  var c=DATA.conversation,box=$('conv-read');
+  box.textContent='';
+  box.appendChild(el('div',c.conversation_id+' · '+c.source_id,'ids'));
+  for(var i=0;i<c.turns.length;i++){
+    var t=c.turns[i],b=el('div',null,'bubble '+t.role);
+    b.appendChild(el('span',t.role==='patient'?'PATIENT':'DOCTOR','who'));
+    b.appendChild(el('p',t.text));
+    box.appendChild(b);
+  }
+  $('conv-json').textContent=JSON.stringify(withNote('2 of 26 turns shown; all texts truncated at 300 chars',c),null,1);
+}
+function switchTab(which){
+  var read=which==='read';
+  $('conv-read').style.display=read?'':'none';
+  $('conv-json-wrap').style.display=read?'none':'';
+  $('tab-read').setAttribute('aria-selected',read?'true':'false');
+  $('tab-json').setAttribute('aria-selected',read?'false':'true');
+}
+function field(label,value){
+  var d=el('div',null,'fld');
+  d.appendChild(el('span',label));
+  d.appendChild(el('p',value));
+  return d;
+}
+function renderAtomic(){
+  var box=$('atomic-list');
+  box.textContent='';
+  for(var i=0;i<DATA.atomic.length;i++){
+    var a=DATA.atomic[i],card=el('div',null,'ex');
+    card.appendChild(el('div',a.example_id+' · '+a.source_id+' · parent '+a.conversation_id,'ids'));
+    var prow=el('p',null);prow.appendChild(el('span',a.action,'badge b-action'));card.appendChild(prow);
+    card.appendChild(field('Context',a.context===''?(i===0?'(empty — the opening turn needs no context)':'(empty)'):a.context));
+    card.appendChild(field('Patient',a.user_message));
+    card.appendChild(field('Doctor',a.response));
+    var det=document.createElement('details'),sum=el('summary','Raw JSON'),pre=el('pre',JSON.stringify(withNote('texts truncated at 300 chars',a),null,1));
+    det.appendChild(sum);det.appendChild(pre);card.appendChild(det);
+    box.appendChild(card);
+  }
+}
+function renderVerdict(v){
+  var p=DATA.triaged[v];
+  $('verdict-ids').textContent=p.example_id+' · '+p.source_id+' · parent '+p.conversation_id;
+  var badge=$('verdict-badge');
+  badge.textContent=v;
+  badge.className='badge b-'+v.toLowerCase();
+  $('verdict-action').textContent=p.action;
+  $('verdict-user').textContent=p.user_message;
+  $('verdict-resp').textContent=p.response;
+  $('verdict-rationale').textContent='rule trace: '+p.triage.rationale;
+  $('verdict-why').textContent=EXPLAIN[v];
+  var html='';
+  for(var i=0;i<DIMS.length;i++){
+    var s=p.triage.dimensions[DIMS[i][0]];
+    var cls=s<=2?'low':(s===3?'mid':'');
+    html+='<div class="dim"><span>'+DIMS[i][1]+'</span><span class="bar '+cls+'"><i style="width:'+(s*20)+'%"></i></span><b>'+s+'</b></div>';
+  }
+  $('verdict-dims').innerHTML=html;
+  var btns=document.querySelectorAll('.verdict-btn');
+  for(var j=0;j<btns.length;j++)btns[j].setAttribute('aria-selected',btns[j].getAttribute('data-verdict')===v?'true':'false');
+}
+function renderReport(){
+  var r=DATA.report,vc=r.verdict_counts;
+  $('report-meta').textContent='Graded '+fmt(r.n)+' rows with '+r.model+': '+fmt(vc.ACCEPT)+' ACCEPT · '+fmt(vc.REVIEW)+' REVIEW · '+fmt(vc.REJECT)+' REJECT.';
+  var ul=$('report-flags');ul.textContent='';
+  for(var f in r.safety_flag_census)ul.appendChild(el('li',f+' — '+fmt(r.safety_flag_census[f])+' rows'));
+  var a=r.agreement;
+  $('report-agree').textContent='Calibration ('+a.grader+'-graded, seed '+r.sample.seed+'): '+a.agree+' of '+a.n_graded+' sampled rows agree (rate '+a.rate+'). Most mismatches run REVIEW→ACCEPT — the rules err toward caution.';
+}
+function renderCalibration(){
+  var c=DATA.calibration,r=c.record0;
+  $('cal-purpose').textContent=c.purpose+' '+c.instructions+' ('+c.n_records+' records, seed '+c.seed+').';
+  $('cal-ids').textContent=r.example_id+' · '+r.action;
+  var box=$('cal-fields');box.textContent='';
+  box.appendChild(field('Context',r.context));
+  box.appendChild(field('Patient',r.user_message));
+  box.appendChild(field('Doctor',r.response));
+  box.appendChild(field('human_verdict',r.human_verdict===null?'null — awaiting a human grader':r.human_verdict));
+  box.appendChild(field('agent_verdict',r.agent_verdict+' (stand-in)'));
+}
+function renderManifest(){
+  $('manifest-pre').textContent=JSON.stringify(DATA.manifest,null,1);
+}
+function updateScore(){
+  var total=0,done=0;
+  for(var k in QUIZ){total++;if(scoreState.done[k])done++;}
+  $('quiz-score').textContent='Score: '+scoreState.n+'/'+total+' ('+done+' answered)';
+}
+function answerQuiz(qid,idx,btn){
+  if(scoreState.done[qid])return false;
+  scoreState.done[qid]=true;
+  var q=QUIZ[qid],right=(idx===q.correct);
+  if(right)scoreState.n+=1;
+  var box=$(qid);
+  if(box&&box.querySelectorAll){
+    var opts=box.querySelectorAll('.opt');
+    for(var i=0;i<opts.length;i++){opts[i].disabled=true;if(i===q.correct&&opts[i].classList)opts[i].classList.add('correct');}
+  }
+  if(btn&&btn.classList)btn.classList.add(right?'correct':'wrong');
+  var fb=$(qid+'-fb');
+  if(fb)fb.textContent=(right?'Right. ':'Not quite. ')+q.explain;
+  updateScore();
+  return right;
+}
+function init(){
+  var keys=['conversation','atomic','triaged','report','calibration','manifest'];
+  for(var k=0;k<keys.length;k++)DATA[keys[k]]=JSON.parse($('data-'+keys[k]).textContent);
+  renderConversation();renderAtomic();renderVerdict('ACCEPT');
+  renderReport();renderCalibration();renderManifest();
+  $('tab-read').addEventListener('click',function(){switchTab('read');});
+  $('tab-json').addEventListener('click',function(){switchTab('json');});
+  var btns=document.querySelectorAll('.verdict-btn');
+  for(var b=0;b<btns.length;b++)(function(btn){btn.addEventListener('click',function(){renderVerdict(btn.getAttribute('data-verdict'));});})(btns[b]);
+}
+if(typeof window!=='undefined')window.__tour={init:init,renderVerdict:renderVerdict,answerQuiz:answerQuiz,switchTab:switchTab};
+if(typeof document!=='undefined'&&document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+</script>
+</main>
+</body>
+</html>
